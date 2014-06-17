@@ -1,4 +1,4 @@
-extapp
+About
 ======
 
 Extapp is the tool to build ExtJS applications.
@@ -24,8 +24,16 @@ Global Options
   -o <file>, --output <file>    Place the output into <file>. Defaults to source file
 ```  
 
+
 Example
 ======
 ```bash
 java -jar .build/extapp-2014.06.jar -v -l -b app -c /portal/extapp-config.js -s /portal/app/app.js -o /portal/app/app-output.js
 ```
+
+
+References
+======
+Inspired by _Nicholas's C. Zakas_ Combiner tool
+- http://www.nczonline.net/blog/2009/09/22/introducing-combiner-a-javascriptcss-concatenation-tool/
+- https://github.com/nzakas/combiner
