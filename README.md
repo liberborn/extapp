@@ -11,6 +11,7 @@ Main features:
 
 Usage
 ======
+```bash
 Usage: java -jar extapp-yyyy.mm.jar [options] [base path] [config file] [source file] [output file]
 
 Global Options
@@ -21,8 +22,10 @@ Global Options
   -c <file>, --config <file>    Config file with extapp options
   -s <file>, --source <file>    Source file. Starting point to process dependencies.
   -o <file>, --output <file>    Place the output into <file>. Defaults to source file
-  
+```  
 
 Example
 ======
+```bash
 java -jar .build/extapp-2014.06.jar -v -l -b app -c /portal/extapp-config.js -s /portal/app/app.js -o /portal/app/app-output.js
+```
