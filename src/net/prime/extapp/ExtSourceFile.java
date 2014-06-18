@@ -2,9 +2,6 @@ package net.prime.extapp;
 
 
 import java.io.*;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
 
@@ -18,12 +15,12 @@ public class ExtSourceFile {
     private Boolean processed = true;
     private Boolean isFile = true;
     
-    private Map<String, Boolean> dependentExtClasses = new HashMap<String, Boolean>();
-
-    
     /**
-     * Creates a new SourceFile based on a file.
-     * @param file
+     * Creates a new SourceFile based on a file
+     * 
+     * @param String fullPath
+     * @param String webPath
+     * @param String charset
      */
     ExtSourceFile(String fullpath, String webPath, String charset){
         File file;
@@ -72,6 +69,20 @@ public class ExtSourceFile {
         return contents;
     }
 
+    /**
+     * Get compressed code of the source file
+     * 
+     */
+    public String getFilteredContents() {
+        String fcode;
+
+        fcode = this.contents.replaceAll("//.*\\n|(\"(?:\\\\[^\"]|\\\\\"|.)*?\")|(?s)/\\*.*?\\*/", ""); // comments
+        fcode = fcode.replaceAll("\\n", ""); // line breaks
+        fcode = fcode.replaceAll("\\s", ""); // white spaces
+
+        return fcode;
+    }
+    
     public void setContents(String contents) {
         this.contents = contents;
     }
@@ -96,20 +107,12 @@ public class ExtSourceFile {
         setProcessed(true);
     }
     
+    /**
+     * Check if file was found and read
+     * 
+     * @return Boolean
+     */
     public Boolean isFile() {
         return isFile;
-    }
-    
-    public void addDependentExtClasses(List<String> depExtClasses) {
-        for (String depExtClass : depExtClasses) {
-            if (this.dependentExtClasses.get(depExtClass) == null) {
-                this.dependentExtClasses.put(depExtClass, true);
-            }
-        }
-    }
-    
-    public boolean hasDependentExtClass(String extClass) {
-        Boolean hasExtClass = this.dependentExtClasses.get(extClass);
-        return hasExtClass != null ? hasExtClass : false;
     }
 }

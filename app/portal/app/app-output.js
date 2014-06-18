@@ -497,24 +497,6 @@ Ext.define('Ext.util.CSS', function() {
 
 
 
-/* ----- /portal/app/DemoSingleton.js ----- */
-
-/*global Ext */
-/*jslint browser: true */
-/*jshint strict: false */
-
-Ext.define('DemoSingleton', {
-    singleton: true,
-
-    requires: [
-        'Ext.grid.View',
-        'Ext.util.CSS',
-        'Ext.Img'
-    ]
-});
-
-
-
 /* ----- /ext/src/grid/View.js ----- */
 
 /*
@@ -579,6 +561,24 @@ Ext.define('Ext.grid.View', {
     autoScroll: true
 });
 
+
+
+
+/* ----- /portal/app/DemoSingleton.js ----- */
+
+/*global Ext */
+/*jslint browser: true */
+/*jshint strict: false */
+
+Ext.define('DemoSingleton', {
+    singleton: true,
+
+    requires: [
+        'Ext.grid.View',
+        'Ext.util.CSS',
+        'Ext.Img'
+    ]
+});
 
 
 

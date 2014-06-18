@@ -28,10 +28,15 @@ public class ExtFileCombiner {
         this.config = config;
     }
 
+    /**
+     * Verbose functions
+     * 
+     */
+
     public void printMsg(String msg, String type) {
         this.main.printMsg(msg, type);
     }
-    
+
     public void printMsg(String msg) {
         this.main.printMsg(msg);
     }
@@ -43,25 +48,40 @@ public class ExtFileCombiner {
     public void printSection(String msg) {
         this.main.printSection(msg);
     }
-    
-    public String filterJsCode(String script) {
-        String fcode;
 
-        fcode = script.replaceAll("(?:/\\*(?:[^*]|(?:\\*+[^*/]))*\\*+/)|(?://.*)","")     // comments
-                      .replaceAll("\n+", "\n").replaceAll("\\n", "")                      // line breaks
-                      .replaceAll("((?!\n+)\\s+)", " ").replaceAll("((?!\n+)\\s+)", "");  // white spaces
-
-        return fcode;            
-    }
-
+    /**
+     * Get dependency type folder
+     * 
+     *   example: controllers > controller, models > model
+     * 
+     * @param String dependType
+     * @return String
+     */
     public String getDependencyTypeFolder(String dependType) {
         return dependType.substring(0, dependType.length()-1);
     }
     
+    /**
+     * Check for requires type enum
+     * 
+     *   useful to resolve path ignoring ext class type
+     *   (not include in file path like 'views/View.js')
+     * 
+     * @param String type
+     * @return String
+     */
     public Boolean isRequiresExtClassType(String type) {
         return type.equals("requires") || type.equals("uses") || type.equals("includes") ? true : false;
     }
     
+    /**
+     * Check for include ext class
+     * 
+     *   useful to exclude 'Ext' classes
+     * 
+     * @param String extClass
+     * @return String
+     */
     public Boolean isIncludeExtClass(String extClass){
         for (Entry<String, Boolean> cls : this.config.getExtClasses().entrySet()) {
             if (!cls.getValue() && extClass.startsWith(cls.getKey())) {
@@ -73,8 +93,7 @@ public class ExtFileCombiner {
     
     public List<String> getDependentExtClassesByType(String type, String fileContents) {
         Pattern depPattern = Pattern.compile(type + "\\:(.*?)\\[(.*?)\\]");
-        String jscode = filterJsCode(fileContents);
-        Matcher depMatcher = depPattern.matcher(jscode);
+        Matcher depMatcher = depPattern.matcher(fileContents);
         List<String> depMatches = new ArrayList<String>();
 
         while(depMatcher.find()) {
@@ -121,6 +140,14 @@ public class ExtFileCombiner {
         return false;
     }
     
+    /**
+     * Resolve path by ext class tree
+     * 
+     *   using path map
+     * 
+     * @param String extClass
+     * 
+     */
     public void resolvePathByTree(String extClass) {
         String path = "";
         String currPath = config.getPaths().get(extClass);
@@ -147,6 +174,11 @@ public class ExtFileCombiner {
         }
     }
     
+    /**
+     * Resolve path by constructor using config
+     * 
+     * @param String extClass
+     */
     public void resolvePathByConfig(String extClass) {
         String extClassWebPath = extClass.replaceAll("\\.", "/") + ".js";
 
@@ -157,6 +189,14 @@ public class ExtFileCombiner {
         config.getPaths().put(extClass, extClassWebPath);        
     }
     
+    /**
+     * Resolve paths
+     * 
+     * - resolve new ext class paths
+     * - collect to known ext class paths in path map
+     * 
+     * @param String extClasses
+     */
     public void resolvePaths(List<String> extClasses) {
         for (String extClass : extClasses) { 
             if (!isResolvedPath(extClass)) {
@@ -177,11 +217,21 @@ public class ExtFileCombiner {
         return this.config.getAppFolder() + "/" + extClass.replaceAll("\\.", "/") + ".js";
     }
 
-    public String getFilePath(String fullPath) {
-        return fullPath.replaceAll(this.main.getBasePath(), "");
-    }
-    
-    public void processSourceFile(String extClass, Integer rank, String parentExtClass) {
+
+
+    /**
+     * Process source file
+     * 
+     * - lookup for file path in path map
+     * - get source file from source files map or create it
+     * - set range
+     * - find dependent ext classes
+     * - process  dependent ext classes
+     * 
+     * @param String extClass
+     * @param Integer rank
+     */
+    public void processSourceFile(String extClass, Integer rank) {
         String path = config.getPaths().get(extClass);
         ExtSourceFile sourceFile = sourceFiles.get(path); 
         
@@ -209,16 +259,7 @@ public class ExtFileCombiner {
             }
 
             // process dependencies
-            List<String> depExtClassesDefined = getDependentExtClasses(sourceFile.getContents());
-            List<String> depExtClasses = new ArrayList<String>();
-
-            for (String depExtClass : depExtClassesDefined) {
-                if (!sourceFile.hasDependentExtClass(depExtClass)) {
-                    depExtClasses.add(depExtClass);
-                }
-            }
-            sourceFile.addDependentExtClasses(depExtClasses);
-
+            List<String> depExtClasses = getDependentExtClasses(sourceFile.getFilteredContents());
             processSourceFiles(depExtClasses, sourceFile.getRank() + 1);
 
         } else {
@@ -228,16 +269,25 @@ public class ExtFileCombiner {
         // printProgress();
     }
     
-    public void processSourceFile(String extClass, Integer rank) {
-        processSourceFile(extClass, rank, null);
-    }
-
+    /**
+     * Process all ext dependencies
+     * 
+     * @param List<String> extClasses
+     * @param Integer rank
+     */
     public void processSourceFiles(List<String> extClasses, Integer rank) {
         for (String extClass : extClasses) {
             processSourceFile(extClass, rank);
         }
     }
     
+    /**
+     *  Finish results
+     *  
+     *  - range source files
+     *  - write to output file
+     *   
+     */
     public void finishResults() {
         try {
             String outputFilepath = this.main.getOutputFilepath();
@@ -276,7 +326,7 @@ public class ExtFileCombiner {
 
             printSection("Success!");
             printMsg("-- total : " + rangedSourceFiles.size() + " files");
-            printMsg("-- time : " + elapsedTimeSec + " seconds");
+            printMsg("-- time : " + elapsedTimeSec + " seconds\n\n\n");
             
         } catch (IOException ex) {
             System.err.println(ex.getMessage());
@@ -289,7 +339,7 @@ public class ExtFileCombiner {
         ExtSourceFile sourceFile = new ExtSourceFile(this.main.getSourceFilepath(), sourceFileWebPath, this.main.getCharset());
         sourceFiles.put(sourceFile.getWebPath(), sourceFile);
 
-        List<String> dependentExtClasses = getDependentExtClasses(sourceFile.getContents());
+        List<String> dependentExtClasses = getDependentExtClasses(sourceFile.getFilteredContents());
         printSection("Processing source files");
         processSourceFiles(dependentExtClasses, sourceFile.getRank() + 1);
         finishResults();

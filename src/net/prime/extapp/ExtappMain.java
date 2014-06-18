@@ -109,23 +109,41 @@ public class ExtappMain {
     
     public void init() {
         try {
+            // Base path
+            if (basePath == null) {
+                basePath = "";
+            }
             printMsg("Base path : " + basePath);
             
-            FileInputStream configFileStream = new FileInputStream(new File(getPath(configFilename)));
-            String configStr = IOUtils.toString(configFileStream, charset);            
+            // Config file
+            if (configFilename != null) {
+                FileInputStream configFileStream = new FileInputStream(new File(getPath(configFilename)));
+                String configStr = IOUtils.toString(configFileStream, charset);            
 
-            if (configStr != null && configStr != "") {
-                config = gs.fromJson(configStr, ExtappConfig.class);
-                printMsg("Config file : " + getPath(configFilename));
-            }
-
-            if (sourceFilename != null) {
-                printMsg("Source file : " + getPath(sourceFilename));
+                if (configStr != null && configStr != "") {
+                    config = gs.fromJson(configStr, ExtappConfig.class);
+                    printMsg("Config file : " + getPath(configFilename));
+                } else {
+                    System.err.println("[ERROR] Config file is non-valid");
+                    usage();
+                    System.exit(1);
+                }                
             } else {
-                printMsg("No source file specified", "error");
+                System.err.println("\n[ERROR] No config file specified");
+                usage();
                 System.exit(1);
             }
 
+            // Source file
+            if (sourceFilename != null) {
+                printMsg("Source file : " + getPath(sourceFilename));
+            } else {
+                System.err.println("\n[ERROR] No source file specified");
+                usage();
+                System.exit(1);
+            }
+
+            // Output file
             if (outputFilename != null) {
                 printMsg("Output file : " + getPath(outputFilename));
             } else {
@@ -141,10 +159,12 @@ public class ExtappMain {
                 printMsg("Output file : " + getPath(sourceFilename));
             }
 
+            // Ext file combiner
             ExtFileCombiner extFileCombiner = new ExtFileCombiner(this, config);
             extFileCombiner.init();
 
-        } catch (Exception e) { 
+        } catch (Exception e) {
+            usage();
             System.err.println(e.getMessage());
             System.exit(1);
         } 
@@ -168,6 +188,7 @@ public class ExtappMain {
 
         // Command line parser
         CmdLineParser parser = new CmdLineParser();
+        CmdLineParser.Option helpOpt = parser.addBooleanOption('h', "help");
         CmdLineParser.Option verboseOpt = parser.addBooleanOption('v', "verbose");
         CmdLineParser.Option delimiterOpt = parser.addBooleanOption('l', "delimiter");
         
@@ -178,6 +199,13 @@ public class ExtappMain {
         
         try {
             parser.parse(args);
+
+            // Help
+            Boolean help = (Boolean) parser.getOptionValue(helpOpt);
+            if (help != null && help.booleanValue()) {
+                usage();
+                System.exit(0);
+            } 
 
             verbose = parser.getOptionValue(verboseOpt) != null;
             delimiter = parser.getOptionValue(delimiterOpt) != null;
@@ -192,13 +220,38 @@ public class ExtappMain {
             extapp.init();
             
         } catch (CmdLineParser.OptionException e) {
+            usage();
             System.exit(1);            
         } catch (Exception e) { 
             System.err.println(e.getMessage());
             System.exit(1);
         } finally {
-            //
+            System.exit(1);
         }
         
-    }    
+    }
+    
+    /**
+     * Usage : outputs help information to the console
+     *
+     */
+    private static void usage() {
+        System.out.println(
+                "\nUsage: java -jar extapp-yyyy.mm.jar [options] [base path] [config file] [source file] [output file]\n\n"
+
+                + "Global Options\n"
+                + "  -h, --help                    Displays this information\n"
+                + "  -v, --verbose                 Display informational messages and warnings\n"
+                + "  -l, --delimiter               Output a delimiter between combined files\n"
+                + "  -b, --basePath                Base path to web folder (absolute or relative)\n"
+                + "  -c <file>, --config <file>    Config file with extapp options\n"
+                + "  -s <file>, --source <file>    Source file. Starting point to process dependencies.\n"
+                + "  -o <file>, --output <file>    Place the output into <file>. Defaults to source file\n\n"
+                
+                + "Required options: -c <file> -s <file>\n\n"
+                
+                + "Example\n"
+                + "  java -jar .build/extapp-2014.06.jar -v -l -b app" 
+                + " -c /portal/extapp-config.js -s /portal/app/app.js -o /portal/app/app-output.js\n\n");
+    }
 }
