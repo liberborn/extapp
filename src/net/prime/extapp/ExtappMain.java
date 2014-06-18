@@ -226,7 +226,7 @@ public class ExtappMain {
             System.err.println(e.getMessage());
             System.exit(1);
         } finally {
-            System.exit(1);
+            // System.exit(1);
         }
         
     }
