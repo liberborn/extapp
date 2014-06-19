@@ -6,6 +6,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -77,18 +78,37 @@ public class ExtFileCombiner {
     /**
      * Check for include ext class
      * 
-     *   useful to exclude 'Ext' classes
+     *   include/exclude ext classes and sub-classes
+     *   collect known ext classes definitions for re-use
+     *   
+     *   example : include 'Ext.ux' but exclude 'Ext'
      * 
      * @param String extClass
-     * @return String
+     * @return Boolean default true
      */
     public Boolean isIncludeExtClass(String extClass){
-        for (Entry<String, Boolean> cls : this.config.getExtClasses().entrySet()) {
-            if (!cls.getValue() && extClass.startsWith(cls.getKey())) {
-                return false;
+        Boolean include = config.getExtClasses().get(extClass);
+        String extClassTree = extClass;
+        int i = extClass.lastIndexOf(".");
+
+        if (include != null && include == true) {
+            i = -1;
+        }
+        
+        while (i != -1) {
+            extClassTree = extClassTree.substring(0, i);
+            include = config.getExtClasses().get(extClassTree);
+            i = extClassTree.lastIndexOf(".");
+            if (include != null) {
+                i = -1;
             }
         }
-        return true;
+        
+        if (include != null) { // collect for re-use
+            config.getExtClasses().put(extClass, include);
+        }
+
+        return include != null ? include : true;
     }
     
     public List<String> getDependentExtClassesByType(String type, String fileContents) {
@@ -120,16 +140,24 @@ public class ExtFileCombiner {
         return extClassMatches;
     }
     
-    public List<String> getDependentExtClasses(String fileContents) {
-        List<String> dependentExtClasses = new ArrayList<String>();
+    public List<String> getDependentExtClasses(ExtSourceFile sourceFile) {
+        List<String> depExtClasses = new ArrayList<String>();
         for (Entry<String, Boolean> depType : this.config.getDependTypes().entrySet()) {
             if (depType.getValue()) {
-                List<String> currDepExtClasses = getDependentExtClassesByType(depType.getKey(), fileContents);
-                dependentExtClasses.addAll(currDepExtClasses);
+                List<String> currDepExtClasses = getDependentExtClassesByType(depType.getKey(), sourceFile.getFilteredContents());
+                depExtClasses.addAll(currDepExtClasses);
             }
         }
-        resolvePaths(dependentExtClasses);
-        return dependentExtClasses;
+        
+        // remove duplicate dependencies
+        List<String> deduppedDepExtClasses = new ArrayList<String>(new LinkedHashSet<String>(depExtClasses));
+        int numDuplicates = depExtClasses.size() - deduppedDepExtClasses.size();
+        if (numDuplicates > 0){
+            printMsg("Ext class '" + sourceFile.getExtClass() + "' has " + numDuplicates + 
+                    " duplicate dependencies. File : " + sourceFile.getWebPath() + "\n", "warning");
+        }
+
+        return deduppedDepExtClasses;
     }
 
     public Boolean isResolvedPath(String extClass) {
@@ -144,6 +172,7 @@ public class ExtFileCombiner {
      * Resolve path by ext class tree
      * 
      *   using path map
+     *   collect known ext classes paths for re-use
      * 
      * @param String extClass
      * 
@@ -238,12 +267,10 @@ public class ExtFileCombiner {
         // create new source file
         if (sourceFile == null) {
             if (path == null) {
-                sourceFile = new ExtSourceFile(getExtClassFilePath(extClass), 
-                        getExtClassFileWebPath(extClass), this.main.getCharset());
+                sourceFile = new ExtSourceFile(extClass, getExtClassFilePath(extClass), getExtClassFileWebPath(extClass));
                 config.getPaths().put(extClass, sourceFile.getWebPath());
             } else {
-                sourceFile = new ExtSourceFile(this.main.getBasePath() + path,
-                        path, this.main.getCharset());
+                sourceFile = new ExtSourceFile(extClass, this.main.getBasePath() + path, path);
             }
             
             if (sourceFile.isFile()) {
@@ -252,20 +279,22 @@ public class ExtFileCombiner {
         }
         
         // process new/existing source file
-        if (sourceFile.isFile()) {
-            // set rank
-            if (sourceFile.getRank() < rank) {
-                sourceFile.setRank(rank);
+        if (sourceFile.isEnabled()){
+            if (sourceFile.isFile()) {
+                // set rank
+                if (sourceFile.getRank() < rank) {
+                    sourceFile.setRank(rank);
+                }
+
+                // process dependencies
+                List<String> depExtClasses = getDependentExtClasses(sourceFile);
+                resolvePaths(depExtClasses);
+                processSourceFiles(sourceFile, depExtClasses, sourceFile.getRank() + 1);
+
+            } else {
+                printMsg("File not found : " + sourceFile.getWebPath() + "\n", "error");
             }
-
-            // process dependencies
-            List<String> depExtClasses = getDependentExtClasses(sourceFile.getFilteredContents());
-            processSourceFiles(depExtClasses, sourceFile.getRank() + 1);
-
-        } else {
-            printMsg("File not found : " + sourceFile.getWebPath() + "\n", "error");
-        }
-        
+        }        
         // printProgress();
     }
     
@@ -275,9 +304,18 @@ public class ExtFileCombiner {
      * @param List<String> extClasses
      * @param Integer rank
      */
-    public void processSourceFiles(List<String> extClasses, Integer rank) {
-        for (String extClass : extClasses) {
-            processSourceFile(extClass, rank);
+    public void processSourceFiles(ExtSourceFile sourceFile, List<String> extClasses, Integer rank) {
+
+        if (this.config.isSafeRank() && this.config.getSafeRankLimit() < rank) {
+            sourceFile.disable();
+            printMsg("Rank limit " + this.config.getSafeRankLimit() + " has been reached. Possibly infinite loop took place.\n          "
+                    + "Stop processing '" + sourceFile.getExtClass() + "'. Please check dependency chain or disable safe rank.\n          "
+                    + "Ext class '" + sourceFile.getExtClass() + "'. File : " + sourceFile.getWebPath() + "\n", "warning");
+
+        } else {
+            for (String extClass : extClasses) {
+                processSourceFile(extClass, rank);
+            }            
         }
     }
     
@@ -303,7 +341,7 @@ public class ExtFileCombiner {
             
             rangedSourceFiles.putAll(this.sourceFiles);
     
-            printSection("Building ext app");
+            printSection("Building ext app...");
             printMsg("-- rank : extClass --");
             
             for (Entry<String, ExtSourceFile> entry : rangedSourceFiles.entrySet()) {
@@ -335,13 +373,17 @@ public class ExtFileCombiner {
     }
 
     public void init() {
+        printSection("Processing source files...");
+
         String sourceFileWebPath = this.main.getSourceFilename();
-        ExtSourceFile sourceFile = new ExtSourceFile(this.main.getSourceFilepath(), sourceFileWebPath, this.main.getCharset());
+        ExtSourceFile sourceFile = new ExtSourceFile(this.config.getAppName(), this.main.getSourceFilepath(), sourceFileWebPath);
         sourceFiles.put(sourceFile.getWebPath(), sourceFile);
 
-        List<String> dependentExtClasses = getDependentExtClasses(sourceFile.getFilteredContents());
-        printSection("Processing source files");
-        processSourceFiles(dependentExtClasses, sourceFile.getRank() + 1);
+        List<String> depExtClasses = getDependentExtClasses(sourceFile);
+        resolvePaths(depExtClasses);
+
+        processSourceFiles(sourceFile, depExtClasses, sourceFile.getRank() + 1);
+
         finishResults();
     }
 }

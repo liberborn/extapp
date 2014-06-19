@@ -20,7 +20,7 @@ public class ExtappMain {
     private String sourceFilename = null;
     private String outputFilename = null;
     
-    private String charset = "UTF-8"; 
+    public static String charset = "UTF-8"; 
 
     private ExtappConfig config = new ExtappConfig();
 

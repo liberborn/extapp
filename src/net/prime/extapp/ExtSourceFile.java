@@ -1,18 +1,18 @@
 package net.prime.extapp;
 
-
 import java.io.*;
-
 import org.apache.commons.io.IOUtils;
+import net.prime.extapp.ExtappMain;
 
 public class ExtSourceFile {
 
+    private String extClass = null;
     private File file = null;
     private String webPath = null;
     private String contents = null;
 
     private Integer rank = 0;
-    private Boolean processed = true;
+    private Boolean enabled = true; // safe rank
     private Boolean isFile = true;
     
     /**
@@ -22,17 +22,18 @@ public class ExtSourceFile {
      * @param String webPath
      * @param String charset
      */
-    ExtSourceFile(String fullpath, String webPath, String charset){
+    ExtSourceFile(String extClass, String fullpath, String webPath){
         File file;
         FileInputStream stream;
         String contents;
 
+        this.extClass = extClass;
         this.webPath = webPath;
 
         try {
             file = new File(fullpath);
             stream = new FileInputStream(file);
-            contents = IOUtils.toString(stream, charset);            
+            contents = IOUtils.toString(stream, ExtappMain.charset);            
             
             this.file = file;
             this.contents = contents;
@@ -47,6 +48,10 @@ public class ExtSourceFile {
 
     }
 
+    public String getExtClass() {
+        return extClass;
+    }
+    
     public File getFile() {
         return file;
     }
@@ -74,9 +79,9 @@ public class ExtSourceFile {
      * 
      */
     public String getFilteredContents() {
-        String fcode;
+        String fcode = this.contents;
 
-        fcode = this.contents.replaceAll("//.*\\n|(\"(?:\\\\[^\"]|\\\\\"|.)*?\")|(?s)/\\*.*?\\*/", ""); // comments
+        fcode = fcode.replaceAll( "//.*|(\"(?:\\\\[^\"]|\\\\\"|.)*?\")|(?s)/\\*.*?\\*/", "$1 " ); // comments
         fcode = fcode.replaceAll("\\n", ""); // line breaks
         fcode = fcode.replaceAll("\\s", ""); // white spaces
 
@@ -95,16 +100,16 @@ public class ExtSourceFile {
         this.rank = rank; 
     }
 
-    public Boolean isProcessed() {
-        return processed;
+    public Boolean isEnabled() {
+        return enabled;
     }
     
-    public void setProcessed(Boolean isProcessed) {
-        this.processed = isProcessed;
+    public void enable() {
+        this.enabled = true;
     }
     
-    public void setProcessed() {
-        setProcessed(true);
+    public void disable() {
+        this.enabled = false;
     }
     
     /**

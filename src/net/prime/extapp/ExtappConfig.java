@@ -31,6 +31,9 @@ public class ExtappConfig {
         }
     };
     
+    private Boolean safeRank = true; // prevent dependencies infinite loop
+    private Integer safeRankLimit = 50; // maximum rank limit to stop infinite loop
+    
     public String getAppName() {
         return name;
     }
@@ -49,5 +52,13 @@ public class ExtappConfig {
     
     public Map<String, Boolean> getExtClasses() {
         return extClasses;
+    }
+    
+    public Boolean isSafeRank() {
+        return safeRank;
+    }
+    
+    public Integer getSafeRankLimit() {
+        return safeRankLimit;
     }
 }
