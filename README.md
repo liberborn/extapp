@@ -3,9 +3,9 @@
 
 Extapp is the lightweight tool to build ExtJS applications. The main goal is to have just one source file as the starting point. All the rest is done automatically.
 
-The tool is processing build in non-conflict manner. It may alert developer about errors and warnings but mainly it does not break the build because some class file was not found for example.
+The tool is processing build in *non-conflict manner*. It may alert developer about errors and warnings but mainly it does not break the build because some class file was not found for example.
 
-Main features of the Extapp tool:
+**The main features of the Extapp tool:**
 - reading dependencies
 - references deduplication
 - smart avoid of infinite loops
@@ -32,24 +32,26 @@ Global Options
 
 ## Reading dependencies
 
-Each Ext class usually starts with 'Ext.define()' method. Parameters like 'requires', 'uses', 'controllers', 'views' etc refer to other classes which have to be declared before current ext class.
+Each Ext class usually starts with **'Ext.define()'** method. Parameters like **'requires', 'uses', 'controllers', 'views'** etc refer to other classes which have to be declared before current ext class.
 
 There are three reference types which can be grouped like this:
-- array types without folders ('requires', 'uses')
-- array types with folders ('controllers', 'models', 'stores', 'views')
-- string types ('extend', 'model', 'store')
+- **array types without folders**: 'requires', 'uses'
+- **array types with folders**: 'controllers', 'models', 'stores', 'views'
+- **string types**: 'extend', 'model', 'store'
 
 ## Rankink classes
 
 The simpliest way to prioritize classes is to rank them based on references. 
 
-For example : if class 'A' with rank 1 requires class 'B' with rank 1 - then class 'B' rises to rank 2. After that if class 'C' with rank 4 uses class 'A' - then class 'A' raises to rank 5 and class 'B' raises to rank 6.
+**For example:** if **class 'A'** with rank #1 requires **class 'B'** with *rank 1* - then **class 'B'** rises to *rank 2*. After that if **class 'C'** with *rank 4* uses **class 'A'** - then **class 'A'** raises to *rank 5* and **class 'B'** raises to *rank 6*.
 
 The ranking table guarantees that all classes are correctly prioritized and will be defined with referencing to already declared classes. 
 
 ## Smart avoid of infinite loops
 
-I have did not find the 100% ultimate way to find out if classes dependencies chains will go into infinite loops. It was resolved in easy way - introduced rank limit. Usually the very huge ExtJS application assemble up to 10-15 rank levels. So we can assume that if rank goes for example to 100 it is very unusual and possibly it is the infinite loop.
+I have did not find the 100% orthodox way to find out if classes dependencies chains will go into infinite loops.
+
+It was resolved with easy trick - *rank limit* introduced. Usually the very huge ExtJS application reaches up to 10-15 rank levels. So we can assume that if rank goes for example to 100 it is very unusual and possibly it is the infinite loop.
 
 ## Build sources into one output file
 
@@ -60,13 +62,13 @@ Actually this is the core feature of the tool. On production environments we don
 Sencha.cmd is the ultimate tool to work with ExtJS applications.
 
 Extapp is about something different.
-- excluding native 'Ext' sources
+- excluding native **'Ext'** sources
 - working in non-conflict way
 - deployment friendly
 
-### Excluding native 'Ext' sources
+### Excluding native **'Ext'** sources
 
-The big ExtJS appications usually use many of core ExtJS sources. That is why it is useful just to include 'ext-all.js' and do not care about native 'Ext' classes. Extapp does the job. You may exclude 'Ext' class but include 'Ext.data' etc.
+The big ExtJS appications usually use many of core ExtJS sources. That is why it is useful just to include 'ext-all.js' and do not care about native **'Ext'** classes. Extapp does the job. You may exclude **'Ext'** class but include **'Ext.data'** etc.
 
 ### Working in non-conflict way
 
@@ -322,6 +324,96 @@ $ java -jar .build/extapp-2014.06.jar -v -l -b app -c /calendar/extapp-config.js
 [INFO] -- total : 33 files
 [INFO] -- time : 0.836 seconds
 
+```
+
+# Deployment with ant/gradle examples
+
+## Ant targets
+```xml
+<project name="Extapp" default="optimizeExtApps" basedir=".">
+
+  <!-- define props -->
+  <taskdef resource="net/sf/antcontrib/antcontrib.properties" />
+
+  <property name="extappJar" value=".build/extapp-2014.06.jar" />
+  <property name="projectBasePath" value="app" />
+
+  <!-- Extapp Builder -->
+  <target name="extappBuilder">
+    <echo message="Extapp optimizer : ${extappName}" />
+    <java jar="${extappJar}" fork="true" failonerror="yes">
+      <arg value="-v" />
+      <arg value="-l" />
+      <arg value="-b" />
+      <arg value="${basePath}" />
+      <arg value="-c" />
+      <arg value="${configFile}" />
+      <arg value="-s" />
+      <arg value="${sourceFile}" />
+      <arg value="-o" />
+      <arg value="${outputFile}" />
+    </java>
+  </target>
+  
+  <!-- Build portal with extapp -->
+  <target name="optimizePortal">
+    <antcall target="extappBuilder">
+      <param name="extappName" value="portal" />
+      <param name="basePath" value="${projectBasePath}" />
+      <param name="configFile" value="/portal/extapp-config.js" />
+      <param name="sourceFile" value="/portal/app.js" />
+      <param name="outputFile" value="/portal/app-output.js" />
+    </antcall>
+  </target>
+
+  <!-- Build calendar with extapp -->
+  <target name="optimizeCalendar">
+    <antcall target="extappBuilder">
+      <param name="extappName" value="calendar" />
+      <param name="basePath" value="${projectBasePath}" />
+      <param name="configFile" value="/calendar/extapp-config.js" />
+      <param name="sourceFile" value="/calendar/src/App.js" />
+      <param name="outputFile" value="" />
+    </antcall>
+  </target>
+
+  <!-- Optimize ExtJS apps with extapp builder -->
+  <target name="optimizeExtApps">
+    <antcall target="optimizePortal" />
+    <antcall target="optimizeCalendar" />
+  </target>
+</project>
+```
+
+
+## Gradle tasks
+```groovy
+def extappJar = '.build/extapp-2014.06.jar'
+
+/**
+ * Extapp Builder
+ *
+ */
+def extappBuilder(name, config, source) {
+    printSection('Extapp optimizer : ' + name)
+    javaexec {
+        main ='-jar'
+        args = [
+            file(extappJar).path, '-v', '-l', '-b', webDir, '-c', config, '-s', source
+        ]
+    }
+}
+
+/**
+ * Optimize ExtJS apps with extapp builder
+ *
+ */
+task optimizeExtApps << {
+    extappBuilder('portal', '/portal/extapp-config.js', '/portal/app.js')
+    extappBuilder('calendar', '/calendar/extapp-config.js', '/calendar/src/App.js')
+}
+
+defaultTasks 'optimizeExtApps'
 ```
 
 
