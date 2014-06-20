@@ -1,16 +1,19 @@
 # About
 
 
-Extapp is the lightweight tool to build ExtJS applications. The main goal is to have just one source file as the starting point. All the rest is done automatically.
+Extapp is the lightweight tool to build ExtJS applications. The main goal is to collect all dependencies required by JS application into one production-ready output file.
 
-The tool is processing build in *non-conflict manner*. It may alert developer about errors and warnings but mainly it does not break the build because some class file was not found for example.
+The tool is processing build in *non-conflict manner*. It may alert developer about errors and warnings but mainly it does not break the build because for example of duplicates or some class file was not found etc.
+
+No additional comment conventions needed. Extapp avoids some custom magic comments like /\*requires file.js \*/. It uses native ExtJS dependencies declarations in **Ext.define()** method or in any other place in the code.
 
 **The main features of the Extapp tool:**
-- reading dependencies
-- references deduplication
-- smart avoid of infinite loops
+- resolving dependencies
+- deduplicate referenced dependencies
 - ranking classes based on references
+- smart avoid of infinite loops
 - build sources into one output file
+- usage in other JS frameworks
 
 
 # Usage
@@ -416,6 +419,82 @@ task optimizeExtApps << {
 defaultTasks 'optimizeExtApps'
 ```
 
+# Usage in other JS frameworks
+
+Extapp can be potentially used in other JS frameworks (not only ExtJS) which are developed similarly to ExtJS methodology.
+
+**ExtJS example:**
+```js
+// ExtJS methodology
+Ext.define({'Ext.classOne.SubClass', {
+    extend: 'Ext.classOne.Class',
+    
+    requires: [
+        'Ext.classTwo.Class
+    ],
+    
+    uses: [
+        'Ext.classTwo.SubClass
+    ],
+    
+    init: function(){
+        // init
+    }
+});
+
+Ext.define({'Ext.classTwo.SubClass', {
+    extend: 'Ext.classTwo.Class',
+    
+    init: function(){
+        // init
+    }
+});
+```
+**Rank results:**
+```bash
+[INFO] -- rank : extClass --
+[INFO] 2 : Ext/classTwo/Class.js
+[INFO] 1 : Ext/classOne/Class.js
+[INFO] 1 : Ext/classTwo/SubClass.js
+[INFO] 0 : Ext/classOne/SubClass.js
+```
+
+**Any other JS framework example:**
+```js
+// ExtJS methodology
+Framework.defineFunction('Framework.classOne.SubClass', {
+    extend: 'Framework.classOne.Class',
+    
+    requires: [
+        'Framework.classTwo.Class
+    ],
+    
+    uses: [
+        'Framework.classTwo.SubClass
+    ],
+    
+    init: function(){
+        // init
+    }
+});
+
+Framework.defineFunction({'Framework.classTwo.SubClass', {
+    extend: 'Framework.classTwo.Class',
+    
+    init: function(){
+        // init
+    }
+});
+```
+
+**Rank results:**
+```bash
+[INFO] -- rank : extClass --
+[INFO] 2 : Framework/classTwo/Class.js
+[INFO] 1 : Framework/classOne/Class.js
+[INFO] 1 : Framework/classTwo/SubClass.js
+[INFO] 0 : Framework/classOne/SubClass.js
+```
 
 # References
 
