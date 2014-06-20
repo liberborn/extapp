@@ -6,7 +6,7 @@ import java.util.Map;
 public class ExtappConfig {
 
     private String name = "Demo"; // app name
-    private String appFolder = "/portal/app";
+    private String appFolder = "/portal";
 
     private Map<String, String> paths = new HashMap<String, String>();
 

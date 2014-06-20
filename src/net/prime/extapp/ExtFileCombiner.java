@@ -95,14 +95,14 @@ public class ExtFileCombiner {
     }
     
     /**
-	 * Check for array dependency type enum
-	 *
-	 *   array dependencies are declared like : '{dependencyType} : [ {extClass}, {extClass}]'
-	 *   string dependencies are declared like : '{dependencyType} : "{extClass}"'
-	 *   
-	 * @param String type
-	 * @return Boolean
-	 */
+     * Check for array dependency type enum
+     *
+     *   array dependencies are declared like : '{dependencyType} : [ {extClass}, {extClass}]'
+     *   string dependencies are declared like : '{dependencyType} : "{extClass}"'
+     *   
+     * @param String type
+     * @return Boolean
+     */
     public Boolean isArrayDependencyType(String type) {
         DependTypeEnum dependType = this.config.getDependTypeEnums().get(type);
         return dependType != null ? dependType.isArrayProperty() : false;
