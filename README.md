@@ -423,18 +423,18 @@ defaultTasks 'optimizeExtApps'
 
 Extapp can be potentially used in other JS frameworks (not only ExtJS) which are developed similarly to ExtJS methodology.
 
-**ExtJS example:**
+### ExtJS example
 ```js
 // ExtJS methodology
 Ext.define({'Ext.classOne.SubClass', {
     extend: 'Ext.classOne.Class',
     
     requires: [
-        'Ext.classTwo.Class
+        'Ext.classTwo.Class'
     ],
     
     uses: [
-        'Ext.classTwo.SubClass
+        'Ext.classTwo.SubClass'
     ],
     
     init: function(){
@@ -450,7 +450,8 @@ Ext.define({'Ext.classTwo.SubClass', {
     }
 });
 ```
-**Rank results:**
+
+### Rank results
 ```bash
 [INFO] -- rank : extClass --
 [INFO] 2 : Ext/classTwo/Class.js
@@ -459,18 +460,18 @@ Ext.define({'Ext.classTwo.SubClass', {
 [INFO] 0 : Ext/classOne/SubClass.js
 ```
 
-**Any other JS framework example:**
+### Any other JS framework example
 ```js
 // ExtJS methodology
 Framework.defineFunction('Framework.classOne.SubClass', {
     extend: 'Framework.classOne.Class',
     
     requires: [
-        'Framework.classTwo.Class
+        'Framework.classTwo.Class'
     ],
     
     uses: [
-        'Framework.classTwo.SubClass
+        'Framework.classTwo.SubClass'
     ],
     
     init: function(){
@@ -487,7 +488,7 @@ Framework.defineFunction({'Framework.classTwo.SubClass', {
 });
 ```
 
-**Rank results:**
+### Rank results
 ```bash
 [INFO] -- rank : extClass --
 [INFO] 2 : Framework/classTwo/Class.js
