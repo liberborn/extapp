@@ -1,7 +1,7 @@
 /*global Ext*/
 /*jshint strict: false*/
 Ext.define('Demo.view.MainView', {
-    extend: 'Ext.container.Viewport',
+    extend: "Demo.view.app.Portlet",
     alias: 'widget.mainview',
 
     uses: [

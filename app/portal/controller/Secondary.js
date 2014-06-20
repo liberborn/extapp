@@ -3,7 +3,7 @@
 /*jslint browser: true*/
 
 Ext.define('Demo.controller.Secondary', {
-    extend: 'Ext.app.Controller',
+    extend: 'Demo.controller.Main',
 
     requires: [
         'DemoSingleton'

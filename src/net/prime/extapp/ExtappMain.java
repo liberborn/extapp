@@ -28,6 +28,8 @@ public class ExtappMain {
     
     // Get current time
     long start = System.currentTimeMillis();
+    int errors = 0;
+    int warnings = 0;
     
     ExtappMain(Boolean verbose, Boolean delimiter, Boolean eliminate, 
             String basePath, String configFilename, String sourceFilename, String outputFilename) {
@@ -154,7 +156,7 @@ public class ExtappMain {
                 FileUtils.copyFile(sourceFile, sourceBackupFile);
                 outputFilename = sourceFilename;
 
-                printMsg("No output file specified. Using source file for output instead.", "warning");
+                printMsg("No output file specified. Using source file for output instead.");
                 printMsg("Source backup file : " + sourceBackupFilename);
                 printMsg("Output file : " + getPath(sourceFilename));
             }
@@ -252,6 +254,6 @@ public class ExtappMain {
                 
                 + "Example\n"
                 + "  java -jar .build/extapp-2014.06.jar -v -l -b app" 
-                + " -c /portal/extapp-config.js -s /portal/app/app.js -o /portal/app/app-output.js\n\n");
+                + " -c /portal/extapp-config.js -s /portal/app.js -o /portal/app-output.js\n\n");
     }
 }

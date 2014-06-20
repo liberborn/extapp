@@ -21,7 +21,7 @@ Ext.application({
     ],
 
     requires: [
-        'Demo.view.MainView',
+        "Demo.view.MainView",
         'DemoSingleton'
     ],
 
@@ -29,7 +29,21 @@ Ext.application({
         'Demo.modules.test.controller.Main',
     ],
 
+    store : Ext.create("Demo.store.Main", {
+        title : 'StoreTitle'
+    }),
+
     launch: function () {
         var me = this;
+        
+        Ext.grid({
+            store : 'Demo.store.SampleStore',
+            width : 100
+        });
+        
+        Ext.grid({
+            store : me.getStore(),
+            width : 100
+        });
     }
 });

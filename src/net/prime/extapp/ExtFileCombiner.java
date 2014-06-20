@@ -14,6 +14,8 @@ import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import net.prime.extapp.ExtappConfig.DependTypeEnum;
+
 public class ExtFileCombiner {
 
     private ExtappMain main = null;
@@ -49,6 +51,22 @@ public class ExtFileCombiner {
     public void printSection(String msg) {
         this.main.printSection(msg);
     }
+    
+    public void printStatistics() {
+        // Get elapsed time in milliseconds
+        long elapsedTimeMillis = System.currentTimeMillis() - this.main.start;
+        // Get elapsed time in seconds
+        float elapsedTimeSec = elapsedTimeMillis/1000F;
+
+        if (this.main.errors > 0) {
+            printMsg("-- errors : " + this.main.errors);
+        }
+        if (this.main.warnings > 0) {
+            printMsg("-- warnings : " + this.main.warnings);
+        }
+        printMsg("-- total : " + rangedSourceFiles.size() + " files");
+        printMsg("-- time : " + elapsedTimeSec + " seconds\n\n\n");
+    }
 
     /**
      * Get dependency type folder
@@ -59,20 +77,35 @@ public class ExtFileCombiner {
      * @return String
      */
     public String getDependencyTypeFolder(String dependType) {
-        return dependType.substring(0, dependType.length()-1);
+        return dependType.substring(0, dependType.length() - 1);
     }
     
     /**
-     * Check for requires type enum
+     * Check for folder type enum
      * 
-     *   useful to resolve path ignoring ext class type
-     *   (not include in file path like 'views/View.js')
+     *   folder types have paths like : '{dependencyType}/{extClass}.js'
+     *   non-folder types have paths like : '{extParentClass}/{extSubClasses}/{extSubClass}.js'
      * 
      * @param String type
-     * @return String
+     * @return Boolean
      */
-    public Boolean isRequiresExtClassType(String type) {
-        return type.equals("requires") || type.equals("uses") || type.equals("includes") ? true : false;
+    public Boolean isFolderDependencyType(String type) {
+        DependTypeEnum dependType = this.config.getDependTypeEnums().get(type);
+        return dependType != null ? dependType.isFolder() : false;
+    }
+    
+    /**
+	 * Check for array dependency type enum
+	 *
+	 *   array dependencies are declared like : '{dependencyType} : [ {extClass}, {extClass}]'
+	 *   string dependencies are declared like : '{dependencyType} : "{extClass}"'
+	 *   
+	 * @param String type
+	 * @return Boolean
+	 */
+    public Boolean isArrayDependencyType(String type) {
+        DependTypeEnum dependType = this.config.getDependTypeEnums().get(type);
+        return dependType != null ? dependType.isArrayProperty() : false;
     }
     
     /**
@@ -111,40 +144,68 @@ public class ExtFileCombiner {
         return include != null ? include : true;
     }
     
-    public List<String> getDependentExtClassesByType(String type, String fileContents) {
-        Pattern depPattern = Pattern.compile(type + "\\:(.*?)\\[(.*?)\\]");
-        Matcher depMatcher = depPattern.matcher(fileContents);
-        List<String> depMatches = new ArrayList<String>();
+    /**
+     * Get dependent ext classes by dependency type
+     * 
+     * @param extClass
+     * @param type
+     * @param filteredCode
+     * @return ArrayList<String> depExtClasses
+     */
+    public List<String> getDependentExtClassesByType(String extClass, String type, String filteredCode) {
+        Pattern depPattern;
+        Matcher depMatcher;
+        List<String> depMatches;
+        Pattern extClassPattern;
+        ArrayList<String> depExtClasses = new ArrayList<String>();
 
-        while(depMatcher.find()) {
-            depMatches.add(depMatcher.group(2).replaceAll("\\s",""));
-        }
+        if (isArrayDependencyType(type)) {
+            depPattern = Pattern.compile(type + "\\:\\[(.*?)\\]");
+            depMatcher = depPattern.matcher(filteredCode);
+            depMatches = new ArrayList<String>();
 
-        Pattern extClassPattern = Pattern.compile("'([^' ]+)'");
-        ArrayList<String> extClassMatches = new ArrayList<String>();
+            while(depMatcher.find()) {
+                depMatches.add(depMatcher.group(1));
+            }
 
-        for(String dep : depMatches) {
-            Matcher extClassMatcher = extClassPattern.matcher(dep);
-            while(extClassMatcher.find()) { 
-                String extClass = extClassMatcher.group().replaceAll("\'", "");
-                
-                if (isIncludeExtClass(extClass)) {
-                    String extClassPrefix = isRequiresExtClassType(type) ? "" : getDependencyTypeFolder(type) + ".";
-                    extClass = extClass.startsWith(this.config.getAppName()) ? extClass : extClassPrefix + extClass;
-                    extClassMatches.add(extClass);
-                    // printMsg("extClass : " + extClass);
+            extClassPattern = Pattern.compile("'([^' ]+)'");
+
+            for(String dep : depMatches) {
+                Matcher extClassMatcher = extClassPattern.matcher(dep.replaceAll("\"","'"));
+                while(extClassMatcher.find()) { 
+                    String depExtClass = extClassMatcher.group().replaceAll("\'", "");
+                    
+                    if (isIncludeExtClass(depExtClass)) {
+                        String depExtClassPrefix = isFolderDependencyType(type) 
+                                ? getDependencyTypeFolder(type) + "." : "";
+                        depExtClass = depExtClass.startsWith(this.config.getAppName()) 
+                                ? depExtClass : depExtClassPrefix + depExtClass;
+                        depExtClasses.add(depExtClass);
+                    }
+                }
+            }            
+        } else {
+            depPattern = Pattern.compile(type + "\\:\\'(.*?)\\'");
+            depMatcher = depPattern.matcher(filteredCode.replaceAll("\"","'"));
+            depMatches = new ArrayList<String>();
+
+            while(depMatcher.find()) {
+                String depExtClass = depMatcher.group(1);
+                if (isIncludeExtClass(depExtClass)) {
+                    depExtClasses.add(depExtClass);
                 }
             }
         }
 
-        return extClassMatches;
+        return depExtClasses;
     }
     
     public List<String> getDependentExtClasses(ExtSourceFile sourceFile) {
         List<String> depExtClasses = new ArrayList<String>();
         for (Entry<String, Boolean> depType : this.config.getDependTypes().entrySet()) {
             if (depType.getValue()) {
-                List<String> currDepExtClasses = getDependentExtClassesByType(depType.getKey(), sourceFile.getFilteredContents());
+                List<String> currDepExtClasses = getDependentExtClassesByType(sourceFile.getExtClass(), 
+                        depType.getKey(), sourceFile.getFilteredContents());
                 depExtClasses.addAll(currDepExtClasses);
             }
         }
@@ -155,6 +216,7 @@ public class ExtFileCombiner {
         if (numDuplicates > 0){
             printMsg("Ext class '" + sourceFile.getExtClass() + "' has " + numDuplicates + 
                     " duplicate dependencies. File : " + sourceFile.getWebPath() + "\n", "warning");
+            this.main.warnings++;
         }
 
         return deduppedDepExtClasses;
@@ -293,6 +355,7 @@ public class ExtFileCombiner {
 
             } else {
                 printMsg("File not found : " + sourceFile.getWebPath() + "\n", "error");
+                this.main.errors++;
             }
         }        
         // printProgress();
@@ -308,9 +371,10 @@ public class ExtFileCombiner {
 
         if (this.config.isSafeRank() && this.config.getSafeRankLimit() < rank) {
             sourceFile.disable();
-            printMsg("Rank limit " + this.config.getSafeRankLimit() + " has been reached. Possibly infinite loop took place.\n          "
-                    + "Stop processing '" + sourceFile.getExtClass() + "'. Please check dependency chain or disable safe rank.\n          "
+            printMsg("Rank limit " + this.config.getSafeRankLimit() + " has been reached. Possibly infinite loop took place.\n"
+                    + "Stop processing '" + sourceFile.getExtClass() + "'. Please check dependency chain or disable safe rank.\n"
                     + "Ext class '" + sourceFile.getExtClass() + "'. File : " + sourceFile.getWebPath() + "\n", "warning");
+            this.main.warnings++;
 
         } else {
             for (String extClass : extClasses) {
@@ -357,14 +421,8 @@ public class ExtFileCombiner {
 
             bw.close();
             
-            // Get elapsed time in milliseconds
-            long elapsedTimeMillis = System.currentTimeMillis() - this.main.start;
-            // Get elapsed time in seconds
-            float elapsedTimeSec = elapsedTimeMillis/1000F;
-
-            printSection("Success!");
-            printMsg("-- total : " + rangedSourceFiles.size() + " files");
-            printMsg("-- time : " + elapsedTimeSec + " seconds\n\n\n");
+            printSection("Extapp build complete!");
+            printStatistics();
             
         } catch (IOException ex) {
             System.err.println(ex.getMessage());
@@ -377,13 +435,19 @@ public class ExtFileCombiner {
 
         String sourceFileWebPath = this.main.getSourceFilename();
         ExtSourceFile sourceFile = new ExtSourceFile(this.config.getAppName(), this.main.getSourceFilepath(), sourceFileWebPath);
-        sourceFiles.put(sourceFile.getWebPath(), sourceFile);
+        
+        if (sourceFile.isFile()) {
+            sourceFiles.put(sourceFile.getWebPath(), sourceFile);    
+            List<String> depExtClasses = getDependentExtClasses(sourceFile);
+            resolvePaths(depExtClasses);
+            processSourceFiles(sourceFile, depExtClasses, sourceFile.getRank() + 1);
+            finishResults();
 
-        List<String> depExtClasses = getDependentExtClasses(sourceFile);
-        resolvePaths(depExtClasses);
-
-        processSourceFiles(sourceFile, depExtClasses, sourceFile.getRank() + 1);
-
-        finishResults();
+        } else {
+            printMsg("Source file not found : " + sourceFile.getWebPath() + "\n", "error");
+            this.main.errors++;
+            printSection("Extapp build failed!");
+            printStatistics();
+        }
     }
 }
