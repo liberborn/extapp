@@ -353,8 +353,6 @@ $ java -jar .build/extapp-2014.06.jar -v -l -b app -c /calendar/extapp-config.js
       <arg value="${configFile}" />
       <arg value="-s" />
       <arg value="${sourceFile}" />
-      <arg value="-o" />
-      <arg value="${outputFile}" />
     </java>
   </target>
   
@@ -365,7 +363,6 @@ $ java -jar .build/extapp-2014.06.jar -v -l -b app -c /calendar/extapp-config.js
       <param name="basePath" value="${projectBasePath}" />
       <param name="configFile" value="/portal/extapp-config.js" />
       <param name="sourceFile" value="/portal/app.js" />
-      <param name="outputFile" value="/portal/app-output.js" />
     </antcall>
   </target>
 
@@ -376,7 +373,6 @@ $ java -jar .build/extapp-2014.06.jar -v -l -b app -c /calendar/extapp-config.js
       <param name="basePath" value="${projectBasePath}" />
       <param name="configFile" value="/calendar/extapp-config.js" />
       <param name="sourceFile" value="/calendar/src/App.js" />
-      <param name="outputFile" value="" />
     </antcall>
   </target>
 
