@@ -5,7 +5,7 @@ Extapp is the lightweight tool to build ExtJS applications. The main goal is to 
 
 The tool is processing build in *non-conflict manner*. It may alert developer about errors and warnings but mainly it does not break the build because for example of duplicates or some class file was not found etc.
 
-No additional comment conventions needed. Extapp avoids some custom magic comments like /\*requires file.js \*/. It uses native ExtJS dependencies declarations in **Ext.define()** method or in any other place in the code.
+No additional comment conventions needed. Extapp avoids some custom magic comments like **/\*requires file.js \*/**. It uses native ExtJS dependencies declarations in **Ext.define()** method or in any other place in the code.
 
 **The main features of the Extapp tool:**
 - resolving dependencies
@@ -33,7 +33,7 @@ Global Options
 
 # Main features
 
-## Reading dependencies
+## Resolving dependencies
 
 Each Ext class usually starts with **'Ext.define()'** method. Parameters like **'requires', 'uses', 'controllers', 'views'** etc refer to other classes which have to be declared before current ext class.
 
@@ -46,7 +46,7 @@ There are three reference types which can be grouped like this:
 
 The simpliest way to prioritize classes is to rank them based on references. 
 
-**For example:** if **class 'A'** with rank #1 requires **class 'B'** with *rank 1* - then **class 'B'** rises to *rank 2*. After that if **class 'C'** with *rank 4* uses **class 'A'** - then **class 'A'** raises to *rank 5* and **class 'B'** raises to *rank 6*.
+**For example:** if **class 'A'** with *rank 1* requires **class 'B'** with *rank 1* - then **class 'B'** rises to *rank 2*. After that if **class 'C'** with *rank 4* uses **class 'A'** - then **class 'A'** raises to *rank 5* and **class 'B'** raises to *rank 6*.
 
 The ranking table guarantees that all classes are correctly prioritized and will be defined with referencing to already declared classes. 
 
@@ -81,9 +81,9 @@ We do not want the dictatorship of the tools. Class was not found ? - OK. Go ahe
 
 It is much more easy to integrate one simple jar file into deployment environments than install and manage huge tools.
 
-Use app build and sources at the same time. Ignoring set output file will backup source file and use it for app build. It is very useful to use the app build and sources at the same time on website. This way may help to not fail the production builds and the website will still working with references to source files.
+**Usage of app build and sources at the same time**. This way may help to not fail the production builds. The website can work with build file and know paths to source files. That is why the app can load source files when needed if they don't exist  or were misplaced in the build file.
 
-Extapp may be easily integrated in both ant and gradle deployment scripts.
+Extapp may be easily integrated in both **ant** and **gradle** deployment scripts.
 
 # Extapp examples
 
