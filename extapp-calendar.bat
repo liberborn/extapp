@@ -1,0 +1,1 @@
+java -jar .build/extapp-2014.06.jar -v -l -b app -c /calendar/extapp-config.js -s /calendar/src/App.js
