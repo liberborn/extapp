@@ -42,18 +42,21 @@
         <h1>
 <a name="about" class="anchor" href="#about"><span class="octicon octicon-link"></span></a>About</h1>
 
-<p>Extapp is the lightweight tool to build ExtJS applications. The main goal is to have just one source file as the starting point. All the rest is done automatically.</p>
+<p>Extapp is the lightweight tool to build ExtJS applications. The main goal is to collect all dependencies required by JS application into one production-ready output file.</p>
 
-<p>The tool is processing build in non-conflict manner. It may alert developer about errors and warnings but mainly it does not break the build because some class file was not found for example.</p>
+<p>The tool is processing build in <em>non-conflict manner</em>. It may alert developer about errors and warnings but mainly it does not break the build because for example of duplicates or some class file was not found etc.</p>
 
-<p>Main features of the Extapp tool:</p>
+<p>No additional comment conventions needed. Extapp avoids some custom magic comments like /*requires file.js */. It uses native ExtJS dependencies declarations in <strong>Ext.define()</strong> method or in any other place in the code.</p>
+
+<p><strong>The main features of the Extapp tool:</strong></p>
 
 <ul>
-<li>reading dependencies</li>
-<li>references deduplication</li>
-<li>smart avoid of infinite loops</li>
+<li>resolving dependencies</li>
+<li>deduplicate referenced dependencies</li>
 <li>ranking classes based on references</li>
+<li>smart avoid of infinite loops</li>
 <li>build sources into one output file</li>
+<li>usage in other JS frameworks</li>
 </ul><h1>
 <a name="usage" class="anchor" href="#usage"><span class="octicon octicon-link"></span></a>Usage</h1>
 
@@ -75,27 +78,32 @@ Global Options
 <h2>
 <a name="reading-dependencies" class="anchor" href="#reading-dependencies"><span class="octicon octicon-link"></span></a>Reading dependencies</h2>
 
-<p>Each Ext class usually starts with 'Ext.define()' method. Parameters like 'requires', 'uses', 'controllers', 'views' etc refer to other classes which have to be declared before current ext class.</p>
+<p>Each Ext class usually starts with <strong>'Ext.define()'</strong> method. Parameters like <strong>'requires', 'uses', 'controllers', 'views'</strong> etc refer to other classes which have to be declared before current ext class.</p>
 
 <p>There are three reference types which can be grouped like this:</p>
 
 <ul>
-<li>array types without folders ('requires', 'uses')</li>
-<li>array types with folders ('controllers', 'models', 'stores', 'views')</li>
-<li>string types ('extend', 'model', 'store')</li>
+<li>
+<strong>array types without folders</strong>: 'requires', 'uses'</li>
+<li>
+<strong>array types with folders</strong>: 'controllers', 'models', 'stores', 'views'</li>
+<li>
+<strong>string types</strong>: 'extend', 'model', 'store'</li>
 </ul><h2>
 <a name="rankink-classes" class="anchor" href="#rankink-classes"><span class="octicon octicon-link"></span></a>Rankink classes</h2>
 
 <p>The simpliest way to prioritize classes is to rank them based on references. </p>
 
-<p>For example : if class 'A' with rank 1 requires class 'B' with rank 1 - then class 'B' rises to rank 2. After that if class 'C' with rank 4 uses class 'A' - then class 'A' raises to rank 5 and class 'B' raises to rank 6.</p>
+<p><strong>For example:</strong> if <strong>class 'A'</strong> with rank #1 requires <strong>class 'B'</strong> with <em>rank 1</em> - then <strong>class 'B'</strong> rises to <em>rank 2</em>. After that if <strong>class 'C'</strong> with <em>rank 4</em> uses <strong>class 'A'</strong> - then <strong>class 'A'</strong> raises to <em>rank 5</em> and <strong>class 'B'</strong> raises to <em>rank 6</em>.</p>
 
 <p>The ranking table guarantees that all classes are correctly prioritized and will be defined with referencing to already declared classes. </p>
 
 <h2>
 <a name="smart-avoid-of-infinite-loops" class="anchor" href="#smart-avoid-of-infinite-loops"><span class="octicon octicon-link"></span></a>Smart avoid of infinite loops</h2>
 
-<p>I have did not find the 100% ultimate way to find out if classes dependencies chains will go into infinite loops. It was resolved in easy way - introduced rank limit. Usually the very huge ExtJS application assemble up to 10-15 rank levels. So we can assume that if rank goes for example to 100 it is very unusual and possibly it is the infinite loop.</p>
+<p>I have did not find the 100% orthodox way to find out if classes dependencies chains will go into infinite loops.</p>
+
+<p>It was resolved with easy trick - <em>rank limit</em> introduced. Usually the very huge ExtJS application reaches up to 10-15 rank levels. So we can assume that if rank goes for example to 100 it is very unusual and possibly it is the infinite loop.</p>
 
 <h2>
 <a name="build-sources-into-one-output-file" class="anchor" href="#build-sources-into-one-output-file"><span class="octicon octicon-link"></span></a>Build sources into one output file</h2>
@@ -110,13 +118,13 @@ Global Options
 <p>Extapp is about something different.</p>
 
 <ul>
-<li>excluding native 'Ext' sources</li>
+<li>excluding native <strong>'Ext'</strong> sources</li>
 <li>working in non-conflict way</li>
 <li>deployment friendly</li>
 </ul><h3>
-<a name="excluding-native-ext-sources" class="anchor" href="#excluding-native-ext-sources"><span class="octicon octicon-link"></span></a>Excluding native 'Ext' sources</h3>
+<a name="excluding-native-ext-sources" class="anchor" href="#excluding-native-ext-sources"><span class="octicon octicon-link"></span></a>Excluding native <strong>'Ext'</strong> sources</h3>
 
-<p>The big ExtJS appications usually use many of core ExtJS sources. That is why it is useful just to include 'ext-all.js' and do not care about native 'Ext' classes. Extapp does the job. You may exclude 'Ext' class but include 'Ext.data' etc.</p>
+<p>The big ExtJS appications usually use many of core ExtJS sources. That is why it is useful just to include 'ext-all.js' and do not care about native <strong>'Ext'</strong> classes. Extapp does the job. You may exclude <strong>'Ext'</strong> class but include <strong>'Ext.data'</strong> etc.</p>
 
 <h3>
 <a name="working-in-non-conflict-way" class="anchor" href="#working-in-non-conflict-way"><span class="octicon octicon-link"></span></a>Working in non-conflict way</h3>
@@ -383,6 +391,181 @@ Ext class <span class="s1">'Demo.modules.test.view.TestView'</span>. File : /por
 <span class="o">[</span>INFO<span class="o">]</span> -- total : <span class="m">33</span> files
 <span class="o">[</span>INFO<span class="o">]</span> -- <span class="nb">time</span> : 0.836 seconds
 
+</pre></div>
+
+<h1>
+<a name="deployment-with-antgradle-examples" class="anchor" href="#deployment-with-antgradle-examples"><span class="octicon octicon-link"></span></a>Deployment with ant/gradle examples</h1>
+
+<h2>
+<a name="ant-targets" class="anchor" href="#ant-targets"><span class="octicon octicon-link"></span></a>Ant targets</h2>
+
+<div class="highlight highlight-xml"><pre><span class="nt">&lt;project</span> <span class="na">name=</span><span class="s">"Extapp"</span> <span class="na">default=</span><span class="s">"optimizeExtApps"</span> <span class="na">basedir=</span><span class="s">"."</span><span class="nt">&gt;</span>
+
+  <span class="c">&lt;!-- define props --&gt;</span>
+  <span class="nt">&lt;taskdef</span> <span class="na">resource=</span><span class="s">"net/sf/antcontrib/antcontrib.properties"</span> <span class="nt">/&gt;</span>
+
+  <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"extappJar"</span> <span class="na">value=</span><span class="s">".build/extapp-2014.06.jar"</span> <span class="nt">/&gt;</span>
+  <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"projectBasePath"</span> <span class="na">value=</span><span class="s">"app"</span> <span class="nt">/&gt;</span>
+
+  <span class="c">&lt;!-- Extapp Builder --&gt;</span>
+  <span class="nt">&lt;target</span> <span class="na">name=</span><span class="s">"extappBuilder"</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;echo</span> <span class="na">message=</span><span class="s">"Extapp optimizer : ${extappName}"</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;java</span> <span class="na">jar=</span><span class="s">"${extappJar}"</span> <span class="na">fork=</span><span class="s">"true"</span> <span class="na">failonerror=</span><span class="s">"yes"</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;arg</span> <span class="na">value=</span><span class="s">"-v"</span> <span class="nt">/&gt;</span>
+      <span class="nt">&lt;arg</span> <span class="na">value=</span><span class="s">"-l"</span> <span class="nt">/&gt;</span>
+      <span class="nt">&lt;arg</span> <span class="na">value=</span><span class="s">"-b"</span> <span class="nt">/&gt;</span>
+      <span class="nt">&lt;arg</span> <span class="na">value=</span><span class="s">"${basePath}"</span> <span class="nt">/&gt;</span>
+      <span class="nt">&lt;arg</span> <span class="na">value=</span><span class="s">"-c"</span> <span class="nt">/&gt;</span>
+      <span class="nt">&lt;arg</span> <span class="na">value=</span><span class="s">"${configFile}"</span> <span class="nt">/&gt;</span>
+      <span class="nt">&lt;arg</span> <span class="na">value=</span><span class="s">"-s"</span> <span class="nt">/&gt;</span>
+      <span class="nt">&lt;arg</span> <span class="na">value=</span><span class="s">"${sourceFile}"</span> <span class="nt">/&gt;</span>
+      <span class="nt">&lt;arg</span> <span class="na">value=</span><span class="s">"-o"</span> <span class="nt">/&gt;</span>
+      <span class="nt">&lt;arg</span> <span class="na">value=</span><span class="s">"${outputFile}"</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;/java&gt;</span>
+  <span class="nt">&lt;/target&gt;</span>
+
+  <span class="c">&lt;!-- Build portal with extapp --&gt;</span>
+  <span class="nt">&lt;target</span> <span class="na">name=</span><span class="s">"optimizePortal"</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;antcall</span> <span class="na">target=</span><span class="s">"extappBuilder"</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;param</span> <span class="na">name=</span><span class="s">"extappName"</span> <span class="na">value=</span><span class="s">"portal"</span> <span class="nt">/&gt;</span>
+      <span class="nt">&lt;param</span> <span class="na">name=</span><span class="s">"basePath"</span> <span class="na">value=</span><span class="s">"${projectBasePath}"</span> <span class="nt">/&gt;</span>
+      <span class="nt">&lt;param</span> <span class="na">name=</span><span class="s">"configFile"</span> <span class="na">value=</span><span class="s">"/portal/extapp-config.js"</span> <span class="nt">/&gt;</span>
+      <span class="nt">&lt;param</span> <span class="na">name=</span><span class="s">"sourceFile"</span> <span class="na">value=</span><span class="s">"/portal/app.js"</span> <span class="nt">/&gt;</span>
+      <span class="nt">&lt;param</span> <span class="na">name=</span><span class="s">"outputFile"</span> <span class="na">value=</span><span class="s">"/portal/app-output.js"</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;/antcall&gt;</span>
+  <span class="nt">&lt;/target&gt;</span>
+
+  <span class="c">&lt;!-- Build calendar with extapp --&gt;</span>
+  <span class="nt">&lt;target</span> <span class="na">name=</span><span class="s">"optimizeCalendar"</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;antcall</span> <span class="na">target=</span><span class="s">"extappBuilder"</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;param</span> <span class="na">name=</span><span class="s">"extappName"</span> <span class="na">value=</span><span class="s">"calendar"</span> <span class="nt">/&gt;</span>
+      <span class="nt">&lt;param</span> <span class="na">name=</span><span class="s">"basePath"</span> <span class="na">value=</span><span class="s">"${projectBasePath}"</span> <span class="nt">/&gt;</span>
+      <span class="nt">&lt;param</span> <span class="na">name=</span><span class="s">"configFile"</span> <span class="na">value=</span><span class="s">"/calendar/extapp-config.js"</span> <span class="nt">/&gt;</span>
+      <span class="nt">&lt;param</span> <span class="na">name=</span><span class="s">"sourceFile"</span> <span class="na">value=</span><span class="s">"/calendar/src/App.js"</span> <span class="nt">/&gt;</span>
+      <span class="nt">&lt;param</span> <span class="na">name=</span><span class="s">"outputFile"</span> <span class="na">value=</span><span class="s">""</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;/antcall&gt;</span>
+  <span class="nt">&lt;/target&gt;</span>
+
+  <span class="c">&lt;!-- Optimize ExtJS apps with extapp builder --&gt;</span>
+  <span class="nt">&lt;target</span> <span class="na">name=</span><span class="s">"optimizeExtApps"</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;antcall</span> <span class="na">target=</span><span class="s">"optimizePortal"</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;antcall</span> <span class="na">target=</span><span class="s">"optimizeCalendar"</span> <span class="nt">/&gt;</span>
+  <span class="nt">&lt;/target&gt;</span>
+<span class="nt">&lt;/project&gt;</span>
+</pre></div>
+
+<h2>
+<a name="gradle-tasks" class="anchor" href="#gradle-tasks"><span class="octicon octicon-link"></span></a>Gradle tasks</h2>
+
+<div class="highlight highlight-groovy"><pre><span class="kt">def</span> <span class="n">extappJar</span> <span class="o">=</span> <span class="s1">'.build/extapp-2014.06.jar'</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * Extapp Builder</span>
+<span class="cm"> *</span>
+<span class="cm"> */</span>
+<span class="kt">def</span> <span class="nf">extappBuilder</span><span class="o">(</span><span class="n">name</span><span class="o">,</span> <span class="n">config</span><span class="o">,</span> <span class="n">source</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">printSection</span><span class="o">(</span><span class="s1">'Extapp optimizer : '</span> <span class="o">+</span> <span class="n">name</span><span class="o">)</span>
+    <span class="n">javaexec</span> <span class="o">{</span>
+        <span class="n">main</span> <span class="o">=</span><span class="s1">'-jar'</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="o">[</span>
+            <span class="n">file</span><span class="o">(</span><span class="n">extappJar</span><span class="o">).</span><span class="na">path</span><span class="o">,</span> <span class="s1">'-v'</span><span class="o">,</span> <span class="s1">'-l'</span><span class="o">,</span> <span class="s1">'-b'</span><span class="o">,</span> <span class="n">webDir</span><span class="o">,</span> <span class="s1">'-c'</span><span class="o">,</span> <span class="n">config</span><span class="o">,</span> <span class="s1">'-s'</span><span class="o">,</span> <span class="n">source</span>
+        <span class="o">]</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * Optimize ExtJS apps with extapp builder</span>
+<span class="cm"> *</span>
+<span class="cm"> */</span>
+<span class="n">task</span> <span class="n">optimizeExtApps</span> <span class="o">&lt;&lt;</span> <span class="o">{</span>
+    <span class="n">extappBuilder</span><span class="o">(</span><span class="s1">'portal'</span><span class="o">,</span> <span class="s1">'/portal/extapp-config.js'</span><span class="o">,</span> <span class="s1">'/portal/app.js'</span><span class="o">)</span>
+    <span class="n">extappBuilder</span><span class="o">(</span><span class="s1">'calendar'</span><span class="o">,</span> <span class="s1">'/calendar/extapp-config.js'</span><span class="o">,</span> <span class="s1">'/calendar/src/App.js'</span><span class="o">)</span>
+<span class="o">}</span>
+
+<span class="n">defaultTasks</span> <span class="s1">'optimizeExtApps'</span>
+</pre></div>
+
+<h1>
+<a name="usage-in-other-js-frameworks" class="anchor" href="#usage-in-other-js-frameworks"><span class="octicon octicon-link"></span></a>Usage in other JS frameworks</h1>
+
+<p>Extapp can be potentially used in other JS frameworks (not only ExtJS) which are developed similarly to ExtJS methodology.</p>
+
+<h3>
+<a name="extjs-example" class="anchor" href="#extjs-example"><span class="octicon octicon-link"></span></a>ExtJS example</h3>
+
+<div class="highlight highlight-js"><pre><span class="c1">// ExtJS methodology</span>
+<span class="nx">Ext</span><span class="p">.</span><span class="nx">define</span><span class="p">({</span><span class="s1">'Ext.classOne.SubClass'</span><span class="p">,</span> <span class="p">{</span>
+    <span class="nx">extend</span><span class="o">:</span> <span class="s1">'Ext.classOne.Class'</span><span class="p">,</span>
+
+    <span class="nx">requires</span><span class="o">:</span> <span class="p">[</span>
+        <span class="s1">'Ext.classTwo.Class'</span>
+    <span class="p">],</span>
+
+    <span class="nx">uses</span><span class="o">:</span> <span class="p">[</span>
+        <span class="s1">'Ext.classTwo.SubClass'</span>
+    <span class="p">],</span>
+
+    <span class="nx">init</span><span class="o">:</span> <span class="kd">function</span><span class="p">(){</span>
+        <span class="c1">// init</span>
+    <span class="p">}</span>
+<span class="p">});</span>
+
+<span class="nx">Ext</span><span class="p">.</span><span class="nx">define</span><span class="p">({</span><span class="s1">'Ext.classTwo.SubClass'</span><span class="p">,</span> <span class="p">{</span>
+    <span class="nx">extend</span><span class="o">:</span> <span class="s1">'Ext.classTwo.Class'</span><span class="p">,</span>
+
+    <span class="nx">init</span><span class="o">:</span> <span class="kd">function</span><span class="p">(){</span>
+        <span class="c1">// init</span>
+    <span class="p">}</span>
+<span class="p">});</span>
+</pre></div>
+
+<h3>
+<a name="rank-results" class="anchor" href="#rank-results"><span class="octicon octicon-link"></span></a>Rank results</h3>
+
+<div class="highlight highlight-bash"><pre><span class="o">[</span>INFO<span class="o">]</span> -- rank : extClass --
+<span class="o">[</span>INFO<span class="o">]</span> <span class="m">2</span> : Ext/classTwo/Class.js
+<span class="o">[</span>INFO<span class="o">]</span> <span class="m">1</span> : Ext/classOne/Class.js
+<span class="o">[</span>INFO<span class="o">]</span> <span class="m">1</span> : Ext/classTwo/SubClass.js
+<span class="o">[</span>INFO<span class="o">]</span> <span class="m">0</span> : Ext/classOne/SubClass.js
+</pre></div>
+
+<h3>
+<a name="any-other-js-framework-example" class="anchor" href="#any-other-js-framework-example"><span class="octicon octicon-link"></span></a>Any other JS framework example</h3>
+
+<div class="highlight highlight-js"><pre><span class="c1">// ExtJS methodology</span>
+<span class="nx">Framework</span><span class="p">.</span><span class="nx">defineFunction</span><span class="p">(</span><span class="s1">'Framework.classOne.SubClass'</span><span class="p">,</span> <span class="p">{</span>
+    <span class="nx">extend</span><span class="o">:</span> <span class="s1">'Framework.classOne.Class'</span><span class="p">,</span>
+
+    <span class="nx">requires</span><span class="o">:</span> <span class="p">[</span>
+        <span class="s1">'Framework.classTwo.Class'</span>
+    <span class="p">],</span>
+
+    <span class="nx">uses</span><span class="o">:</span> <span class="p">[</span>
+        <span class="s1">'Framework.classTwo.SubClass'</span>
+    <span class="p">],</span>
+
+    <span class="nx">init</span><span class="o">:</span> <span class="kd">function</span><span class="p">(){</span>
+        <span class="c1">// init</span>
+    <span class="p">}</span>
+<span class="p">});</span>
+
+<span class="nx">Framework</span><span class="p">.</span><span class="nx">defineFunction</span><span class="p">({</span><span class="s1">'Framework.classTwo.SubClass'</span><span class="p">,</span> <span class="p">{</span>
+    <span class="nx">extend</span><span class="o">:</span> <span class="s1">'Framework.classTwo.Class'</span><span class="p">,</span>
+
+    <span class="nx">init</span><span class="o">:</span> <span class="kd">function</span><span class="p">(){</span>
+        <span class="c1">// init</span>
+    <span class="p">}</span>
+<span class="p">});</span>
+</pre></div>
+
+<h3>
+<a name="rank-results-1" class="anchor" href="#rank-results-1"><span class="octicon octicon-link"></span></a>Rank results</h3>
+
+<div class="highlight highlight-bash"><pre><span class="o">[</span>INFO<span class="o">]</span> -- rank : extClass --
+<span class="o">[</span>INFO<span class="o">]</span> <span class="m">2</span> : Framework/classTwo/Class.js
+<span class="o">[</span>INFO<span class="o">]</span> <span class="m">1</span> : Framework/classOne/Class.js
+<span class="o">[</span>INFO<span class="o">]</span> <span class="m">1</span> : Framework/classTwo/SubClass.js
+<span class="o">[</span>INFO<span class="o">]</span> <span class="m">0</span> : Framework/classOne/SubClass.js
 </pre></div>
 
 <h1>
