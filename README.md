@@ -64,7 +64,7 @@ Actually this is the core feature of the tool. On production environments we don
 
 Sencha.cmd is the ultimate tool to work with ExtJS applications.
 
-Extapp is about something different.
+Extapp is about something different. It is probably more like the alternative of JS Compiler module built in Sencha.cmd.
 - excluding native **'Ext'** sources
 - working in non-conflict way
 - deployment friendly
