@@ -1,44 +1,36 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <title>Extapp by liberborn</title>
-    <link rel="stylesheet" href="stylesheets/styles.css">
-    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-    <script src="javascripts/main.js"></script>
-    <!--[if lt IE 9]>
-      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
-    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
 
+  <head>
+    <meta charset='utf-8' />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <meta name="description" content="Extapp : Extapp is the tool to build ExtJS applications. Ranking dependencies and combining all ExtJS classes into one output file." />
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>Extapp</title>
   </head>
+
   <body>
 
-      <header>
-        <h1>Extapp</h1>
-        <p>Extapp is the tool to build ExtJS applications. Ranking dependencies and combining all ExtJS classes into one output file.</p>
-      </header>
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/liberborn/extapp">View on GitHub</a>
 
-      <div id="banner">
-        <span id="logo"></span>
+          <h1 id="project_title">Extapp</h1>
+          <h2 id="project_tagline">Extapp is the tool to build ExtJS applications. Ranking dependencies and combining all ExtJS classes into one output file.</h2>
 
-        <a href="https://github.com/liberborn/extapp" class="button fork"><strong>View On GitHub</strong></a>
-        <div class="downloads">
-          <span>Downloads:</span>
-          <ul>
-            <li><a href="https://github.com/liberborn/extapp/zipball/master" class="button">ZIP</a></li>
-            <li><a href="https://github.com/liberborn/extapp/tarball/master" class="button">TAR</a></li>
-          </ul>
-        </div>
-      </div><!-- end banner -->
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/liberborn/extapp/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/liberborn/extapp/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
 
-    <div class="wrapper">
-      <nav>
-        <ul></ul>
-      </nav>
-      <section>
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
         <h1>
 <a name="about" class="anchor" href="#about"><span class="octicon octicon-link"></span></a>About</h1>
 
@@ -46,16 +38,17 @@
 
 <p>The tool is processing build in <em>non-conflict manner</em>. It may alert developer about errors and warnings but mainly it does not break the build because for example of duplicates or some class file was not found etc.</p>
 
-<p>No additional comment conventions needed. Extapp avoids some custom magic comments like /*requires file.js */. It uses native ExtJS dependencies declarations in <strong>Ext.define()</strong> method or in any other place in the code.</p>
+<p>No additional comment conventions needed. Extapp avoids some custom magic comments like <strong>/*requires file.js */</strong>. It uses native ExtJS dependencies declarations in <strong>Ext.define()</strong> method or in any other place in the code.</p>
 
 <p><strong>The main features of the Extapp tool:</strong></p>
 
 <ul>
+<li>build sources into one output file</li>
 <li>resolving dependencies</li>
 <li>deduplicate referenced dependencies</li>
 <li>ranking classes based on references</li>
 <li>smart avoid of infinite loops</li>
-<li>build sources into one output file</li>
+<li>minify JS code</li>
 <li>usage in other JS frameworks</li>
 </ul><h1>
 <a name="usage" class="anchor" href="#usage"><span class="octicon octicon-link"></span></a>Usage</h1>
@@ -66,6 +59,7 @@ Global Options
   -h, --help                    Displays this information
   -v, --verbose                 Display informational messages and warnings
   -l, --delimiter               Output a delimiter between combined files
+  -m, --minify                  Minify js code in the output file
   -b, --basePath                Base path to web folder <span class="o">(</span>absolute or relative<span class="o">)</span>
   -c &lt;file&gt;, --config &lt;file&gt;    Config file with extapp options
   -s &lt;file&gt;, --source &lt;file&gt;    Source file. Starting point to process dependencies.
@@ -76,7 +70,12 @@ Global Options
 <a name="main-features" class="anchor" href="#main-features"><span class="octicon octicon-link"></span></a>Main features</h1>
 
 <h2>
-<a name="reading-dependencies" class="anchor" href="#reading-dependencies"><span class="octicon octicon-link"></span></a>Reading dependencies</h2>
+<a name="build-sources-into-one-output-file" class="anchor" href="#build-sources-into-one-output-file"><span class="octicon octicon-link"></span></a>Build sources into one output file</h2>
+
+<p>Actually this is the core feature of the tool. On production environments we don't need to load hundreds of small files with ExtJS classes declared. It significantly decreases browser performance and UI experience. We want to have one combined script file even with ~10Mb size. User can wait one time.</p>
+
+<h2>
+<a name="resolving-dependencies" class="anchor" href="#resolving-dependencies"><span class="octicon octicon-link"></span></a>Resolving dependencies</h2>
 
 <p>Each Ext class usually starts with <strong>'Ext.define()'</strong> method. Parameters like <strong>'requires', 'uses', 'controllers', 'views'</strong> etc refer to other classes which have to be declared before current ext class.</p>
 
@@ -94,7 +93,7 @@ Global Options
 
 <p>The simpliest way to prioritize classes is to rank them based on references. </p>
 
-<p><strong>For example:</strong> if <strong>class 'A'</strong> with rank #1 requires <strong>class 'B'</strong> with <em>rank 1</em> - then <strong>class 'B'</strong> rises to <em>rank 2</em>. After that if <strong>class 'C'</strong> with <em>rank 4</em> uses <strong>class 'A'</strong> - then <strong>class 'A'</strong> raises to <em>rank 5</em> and <strong>class 'B'</strong> raises to <em>rank 6</em>.</p>
+<p><strong>For example:</strong> if <strong>class 'A'</strong> with <em>rank 1</em> requires <strong>class 'B'</strong> with <em>rank 1</em> - then <strong>class 'B'</strong> rises to <em>rank 2</em>. After that if <strong>class 'C'</strong> with <em>rank 4</em> uses <strong>class 'A'</strong> - then <strong>class 'A'</strong> raises to <em>rank 5</em> and <strong>class 'B'</strong> raises to <em>rank 6</em>.</p>
 
 <p>The ranking table guarantees that all classes are correctly prioritized and will be defined with referencing to already declared classes. </p>
 
@@ -106,16 +105,18 @@ Global Options
 <p>It was resolved with easy trick - <em>rank limit</em> introduced. Usually the very huge ExtJS application reaches up to 10-15 rank levels. So we can assume that if rank goes for example to 100 it is very unusual and possibly it is the infinite loop.</p>
 
 <h2>
-<a name="build-sources-into-one-output-file" class="anchor" href="#build-sources-into-one-output-file"><span class="octicon octicon-link"></span></a>Build sources into one output file</h2>
+<a name="minify-js-code" class="anchor" href="#minify-js-code"><span class="octicon octicon-link"></span></a>Minify JS Code</h2>
 
-<p>Actually this is the core feature of the tool. On production environments we don't need to load hundreds of small files with ExtJS classes declared. It significantly decreases browser performance and UI experience. We want to have one combined script file even with ~10Mb size. User can wait one time.</p>
+<p>Simple JS Code minify option. Removes comments, line breaks and white spaces. I would recommend to use <strong><a href="https://github.com/yui/yuicompressor">YUI Compressor</a></strong> instead.</p>
+
+<p>But in rare cases when code is not working you can keep in mind that <strong>YUI Compressor</strong> is modyfiying code a little bit (changes local variables in fuctions etc). So the simple minify option would be better to use sometimes.</p>
 
 <h2>
 <a name="extapp-vs-senchacmd" class="anchor" href="#extapp-vs-senchacmd"><span class="octicon octicon-link"></span></a>Extapp VS Sencha.cmd</h2>
 
 <p>Sencha.cmd is the ultimate tool to work with ExtJS applications.</p>
 
-<p>Extapp is about something different.</p>
+<p>Extapp is about something different. It is probably more like the alternative of JS Compiler module built in Sencha.cmd.</p>
 
 <ul>
 <li>excluding native <strong>'Ext'</strong> sources</li>
@@ -136,9 +137,9 @@ Global Options
 
 <p>It is much more easy to integrate one simple jar file into deployment environments than install and manage huge tools.</p>
 
-<p>Use app build and sources at the same time. Ignoring set output file will backup source file and use it for app build. It is very useful to use the app build and sources at the same time on website. This way may help to not fail the production builds and the website will still working with references to source files.</p>
+<p><strong>Usage of app build and sources at the same time</strong>. This way may help to not fail the production builds. The website can work with build file and know paths to source files. That is why the app can load source files when needed if they don't exist  or were misplaced in the build file.</p>
 
-<p>Extapp may be easily integrated in both ant and gradle deployment scripts.</p>
+<p>Extapp may be easily integrated in both <strong>ant</strong> and <strong>gradle</strong> deployment scripts.</p>
 
 <h1>
 <a name="extapp-examples" class="anchor" href="#extapp-examples"><span class="octicon octicon-link"></span></a>Extapp examples</h1>
@@ -419,8 +420,6 @@ Ext class <span class="s1">'Demo.modules.test.view.TestView'</span>. File : /por
       <span class="nt">&lt;arg</span> <span class="na">value=</span><span class="s">"${configFile}"</span> <span class="nt">/&gt;</span>
       <span class="nt">&lt;arg</span> <span class="na">value=</span><span class="s">"-s"</span> <span class="nt">/&gt;</span>
       <span class="nt">&lt;arg</span> <span class="na">value=</span><span class="s">"${sourceFile}"</span> <span class="nt">/&gt;</span>
-      <span class="nt">&lt;arg</span> <span class="na">value=</span><span class="s">"-o"</span> <span class="nt">/&gt;</span>
-      <span class="nt">&lt;arg</span> <span class="na">value=</span><span class="s">"${outputFile}"</span> <span class="nt">/&gt;</span>
     <span class="nt">&lt;/java&gt;</span>
   <span class="nt">&lt;/target&gt;</span>
 
@@ -431,7 +430,6 @@ Ext class <span class="s1">'Demo.modules.test.view.TestView'</span>. File : /por
       <span class="nt">&lt;param</span> <span class="na">name=</span><span class="s">"basePath"</span> <span class="na">value=</span><span class="s">"${projectBasePath}"</span> <span class="nt">/&gt;</span>
       <span class="nt">&lt;param</span> <span class="na">name=</span><span class="s">"configFile"</span> <span class="na">value=</span><span class="s">"/portal/extapp-config.js"</span> <span class="nt">/&gt;</span>
       <span class="nt">&lt;param</span> <span class="na">name=</span><span class="s">"sourceFile"</span> <span class="na">value=</span><span class="s">"/portal/app.js"</span> <span class="nt">/&gt;</span>
-      <span class="nt">&lt;param</span> <span class="na">name=</span><span class="s">"outputFile"</span> <span class="na">value=</span><span class="s">"/portal/app-output.js"</span> <span class="nt">/&gt;</span>
     <span class="nt">&lt;/antcall&gt;</span>
   <span class="nt">&lt;/target&gt;</span>
 
@@ -442,7 +440,6 @@ Ext class <span class="s1">'Demo.modules.test.view.TestView'</span>. File : /por
       <span class="nt">&lt;param</span> <span class="na">name=</span><span class="s">"basePath"</span> <span class="na">value=</span><span class="s">"${projectBasePath}"</span> <span class="nt">/&gt;</span>
       <span class="nt">&lt;param</span> <span class="na">name=</span><span class="s">"configFile"</span> <span class="na">value=</span><span class="s">"/calendar/extapp-config.js"</span> <span class="nt">/&gt;</span>
       <span class="nt">&lt;param</span> <span class="na">name=</span><span class="s">"sourceFile"</span> <span class="na">value=</span><span class="s">"/calendar/src/App.js"</span> <span class="nt">/&gt;</span>
-      <span class="nt">&lt;param</span> <span class="na">name=</span><span class="s">"outputFile"</span> <span class="na">value=</span><span class="s">""</span> <span class="nt">/&gt;</span>
     <span class="nt">&lt;/antcall&gt;</span>
   <span class="nt">&lt;/target&gt;</span>
 
@@ -578,12 +575,17 @@ Ext class <span class="s1">'Demo.modules.test.view.TestView'</span>. File : /por
 <li><a href="https://github.com/nzakas/combiner">https://github.com/nzakas/combiner</a></li>
 </ul>
       </section>
-      <footer>
-        <p>Project maintained by <a href="https://github.com/liberborn">liberborn</a></p>
-        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://twitter.com/michigangraham">mattgraham</a></small></p>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Extapp maintained by <a href="https://github.com/liberborn">liberborn</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
       </footer>
     </div>
-    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+
     
+
   </body>
 </html>
