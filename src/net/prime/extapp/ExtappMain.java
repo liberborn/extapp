@@ -15,6 +15,7 @@ public class ExtappMain {
 
     private Boolean verbose = false;
     private Boolean delimiter = false;
+    private Boolean minify = false;
     private String basePath = "";
     private String configFilename = null;
     private String sourceFilename = null;
@@ -31,10 +32,11 @@ public class ExtappMain {
     int errors = 0;
     int warnings = 0;
     
-    ExtappMain(Boolean verbose, Boolean delimiter, Boolean eliminate, 
+    ExtappMain(Boolean verbose, Boolean delimiter, Boolean minify, 
             String basePath, String configFilename, String sourceFilename, String outputFilename) {
         this.verbose = verbose;
         this.delimiter = delimiter;
+        this.minify = minify;
         this.basePath = basePath;
         this.configFilename = configFilename;
         this.sourceFilename = sourceFilename;
@@ -51,6 +53,10 @@ public class ExtappMain {
     
     public Boolean getDelimiter() {
         return delimiter;
+    }
+    
+    public Boolean isMinify() {
+        return minify;
     }
     
     public String getConfigFilename() {
@@ -160,6 +166,16 @@ public class ExtappMain {
                 printMsg("Source backup file : " + sourceBackupFilename);
                 printMsg("Output file : " + getPath(sourceFilename));
             }
+            
+            // Delimiter
+            if (delimiter) {
+                printMsg("Delimiter is enabled");
+            }
+            
+            // Minify
+            if (minify) {
+                printMsg("Minify is enabled");
+            }
 
             // Ext file combiner
             ExtFileCombiner extFileCombiner = new ExtFileCombiner(this, config);
@@ -182,7 +198,7 @@ public class ExtappMain {
         // Default settings
         Boolean verbose = false;
         Boolean delimiter = false;
-        Boolean eliminate = false;
+        Boolean minify = false;
         String basePath = "";
         String configFilename = null;
         String sourceFilename = null;
@@ -193,6 +209,7 @@ public class ExtappMain {
         CmdLineParser.Option helpOpt = parser.addBooleanOption('h', "help");
         CmdLineParser.Option verboseOpt = parser.addBooleanOption('v', "verbose");
         CmdLineParser.Option delimiterOpt = parser.addBooleanOption('l', "delimiter");
+        CmdLineParser.Option minifyOpt = parser.addBooleanOption('m', "minify");
         
         CmdLineParser.Option basePathOpt = parser.addStringOption('b', "basePath");
         CmdLineParser.Option configFilenameOpt = parser.addStringOption('c', "config");
@@ -211,13 +228,14 @@ public class ExtappMain {
 
             verbose = parser.getOptionValue(verboseOpt) != null;
             delimiter = parser.getOptionValue(delimiterOpt) != null;
+            minify = parser.getOptionValue(minifyOpt) != null;
 
             basePath = (String) parser.getOptionValue(basePathOpt);
             configFilename = (String) parser.getOptionValue(configFilenameOpt);
             sourceFilename = (String) parser.getOptionValue(sourceFilenameOpt);
             outputFilename = (String) parser.getOptionValue(outputFilenameOpt);
     
-            ExtappMain extapp = new ExtappMain(verbose, delimiter, eliminate, basePath, configFilename, sourceFilename, outputFilename);
+            ExtappMain extapp = new ExtappMain(verbose, delimiter, minify, basePath, configFilename, sourceFilename, outputFilename);
             
             extapp.init();
             
@@ -245,6 +263,7 @@ public class ExtappMain {
                 + "  -h, --help                    Displays this information\n"
                 + "  -v, --verbose                 Display informational messages and warnings\n"
                 + "  -l, --delimiter               Output a delimiter between combined files\n"
+                + "  -m, --minify                  Minify js code in the output file\n"
                 + "  -b, --basePath                Base path to web folder (absolute or relative)\n"
                 + "  -c <file>, --config <file>    Config file with extapp options\n"
                 + "  -s <file>, --source <file>    Source file. Starting point to process dependencies.\n"

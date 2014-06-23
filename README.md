@@ -25,6 +25,7 @@ Global Options
   -h, --help                    Displays this information
   -v, --verbose                 Display informational messages and warnings
   -l, --delimiter               Output a delimiter between combined files
+  -m, --minify                  Minify js code in the output file
   -b, --basePath                Base path to web folder (absolute or relative)
   -c <file>, --config <file>    Config file with extapp options
   -s <file>, --source <file>    Source file. Starting point to process dependencies.

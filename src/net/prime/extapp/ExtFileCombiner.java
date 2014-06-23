@@ -411,10 +411,16 @@ public class ExtFileCombiner {
             for (Entry<String, ExtSourceFile> entry : rangedSourceFiles.entrySet()) {
                 String key = entry.getKey();
                 ExtSourceFile sourceFile = entry.getValue();
+
                 if (this.main.getDelimiter()){
                     bw.write("\n\n/* ----- " + sourceFile.getWebPath() + " ----- */\n\n");
                 }
-                bw.write(sourceFile.getContents() + "\n\n");
+
+                if (this.main.isMinify()) {
+                    bw.write(sourceFile.getFilteredContents());
+                } else {
+                    bw.write(sourceFile.getContents() + "\n\n");
+                }
     
                 printMsg(sourceFile.getRank() + " : " + key);
             }
