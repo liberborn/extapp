@@ -8,11 +8,12 @@ The tool is processing build in *non-conflict manner*. It may alert developer ab
 No additional comment conventions needed. Extapp avoids some custom magic comments like **/\*requires file.js \*/**. It uses native ExtJS dependencies declarations in **Ext.define()** method or in any other place in the code.
 
 **The main features of the Extapp tool:**
+- build sources into one output file
 - resolving dependencies
 - deduplicate referenced dependencies
 - ranking classes based on references
 - smart avoid of infinite loops
-- build sources into one output file
+- minify JS code
 - usage in other JS frameworks
 
 
@@ -33,6 +34,10 @@ Global Options
 ```  
 
 # Main features
+
+## Build sources into one output file
+
+Actually this is the core feature of the tool. On production environments we don't need to load hundreds of small files with ExtJS classes declared. It significantly decreases browser performance and UI experience. We want to have one combined script file even with ~10Mb size. User can wait one time.
 
 ## Resolving dependencies
 
@@ -57,9 +62,11 @@ I have did not find the 100% orthodox way to find out if classes dependencies ch
 
 It was resolved with easy trick - *rank limit* introduced. Usually the very huge ExtJS application reaches up to 10-15 rank levels. So we can assume that if rank goes for example to 100 it is very unusual and possibly it is the infinite loop.
 
-## Build sources into one output file
+## Minify JS Code
 
-Actually this is the core feature of the tool. On production environments we don't need to load hundreds of small files with ExtJS classes declared. It significantly decreases browser performance and UI experience. We want to have one combined script file even with ~10Mb size. User can wait one time.
+Simple JS Code minify option. Removes comments, line breaks and white spaces. I would recommend to use **[YUI Compressor](https://github.com/yui/yuicompressor)** instead.
+
+But in rare cases when code is not working you can keep in mind that **YUI Compressor** is modyfiying code a little bit (changes local variables in fuctions etc). So the simple minify option would be better to use sometimes.
 
 ## Extapp VS Sencha.cmd
 
