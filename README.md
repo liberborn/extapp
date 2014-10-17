@@ -48,7 +48,7 @@ There are three reference types which can be grouped like this:
 - **array types with folders**: 'controllers', 'models', 'stores', 'views'
 - **string types**: 'extend', 'model', 'store'
 
-## Rankink classes
+## Ranking classes
 
 The simpliest way to prioritize classes is to rank them based on references. 
 

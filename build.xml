@@ -21,7 +21,7 @@
                includes="**/*.java"
                deprecation="off"
                debug="on"
-               source="1.8"
+               source="1.7"
                executable="${env.JAVA_HOME}/bin/javac"
                includeantruntime="false">
             <classpath>
