@@ -33,8 +33,8 @@ public class ExtSourceFile {
         try {
             file = new File(fullpath);
             stream = new FileInputStream(file);
-            contents = IOUtils.toString(stream, ExtappMain.charset);            
-            
+            contents = IOUtils.toString(stream, ExtappMain.charset).replaceAll("\r\n", "\n");
+
             this.file = file;
             this.contents = contents;
 
