@@ -235,7 +235,7 @@ public class ExtappMain {
             sourceFilename = (String) parser.getOptionValue(sourceFilenameOpt);
             outputFilename = (String) parser.getOptionValue(outputFilenameOpt);
     
-            ExtappMain extapp = new ExtappMain(verbose, delimiter, minify, basePath, configFilename, sourceFilename, outputFilename);
+            ExtappMain extapp = new ExtappMain(verbose, delimiter, false, basePath, configFilename, sourceFilename, outputFilename);
             
             extapp.init();
             
@@ -263,7 +263,6 @@ public class ExtappMain {
                 + "  -h, --help                    Displays this information\n"
                 + "  -v, --verbose                 Display informational messages and warnings\n"
                 + "  -l, --delimiter               Output a delimiter between combined files\n"
-                + "  -m, --minify                  Minify js code in the output file\n"
                 + "  -b, --basePath                Base path to web folder (absolute or relative)\n"
                 + "  -c <file>, --config <file>    Config file with extapp options\n"
                 + "  -s <file>, --source <file>    Source file. Starting point to process dependencies.\n"
