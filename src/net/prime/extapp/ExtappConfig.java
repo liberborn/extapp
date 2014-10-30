@@ -16,6 +16,7 @@ public class ExtappConfig {
             // array types without folders
             put("requires", true);
             put("uses", true);
+            put("mixins", true);
             put("includes", true); // custom type (not documented in ExtJS)
 
             // array types with folders
@@ -43,41 +44,56 @@ public class ExtappConfig {
 
     class DependTypeEnum {
         public Boolean folder;
-        public String property;
+        public DependType dependType;
 
-        DependTypeEnum(Boolean folder, String property) {
+        DependTypeEnum(Boolean folder,  DependType dependType) {
             this.folder = folder;
-            this.property = property;
+            this.dependType = dependType;
         }
         
         public Boolean isFolder(){
             return folder;
         }
 
-        public Boolean isStringProperty() {
-            return property.equals("string") ? true : false;
-        }
-        
         public Boolean isArrayProperty() {
-            return property.equals("array") ? true : false;
+            return dependType.getValue().equals("Array") ? true : false;
         }
+
+        public Boolean isStringProperty() {
+            return dependType.getValue().equals("String") ? true : false;
+        }        
     }
 
+    private enum DependType {
+        ARRAY("Array"), 
+        STRING("String");
+        
+        private String value;
+        
+        private DependType(String value) {
+            this.value = value;
+        }
+        public String getValue() {
+            return value;
+        }
+    }
+    
     private Map<String, DependTypeEnum> dependTypeEnums = new HashMap<String, DependTypeEnum>(){
         private static final long serialVersionUID = 1L;
         {
-            put("requires", new DependTypeEnum(false, "array"));
-            put("uses", new DependTypeEnum(false, "array"));
-            put("includes", new DependTypeEnum(false, "array"));
+            put("requires", new DependTypeEnum(false, DependType.ARRAY));
+            put("uses", new DependTypeEnum(false, DependType.ARRAY));
+            put("mixins", new DependTypeEnum(false, DependType.ARRAY));
+            put("includes", new DependTypeEnum(false, DependType.ARRAY));
 
-            put("controllers", new DependTypeEnum(true, "array"));
-            put("models", new DependTypeEnum(true, "array"));
-            put("stores", new DependTypeEnum(true, "array"));
-            put("views", new DependTypeEnum(true, "array"));
+            put("controllers", new DependTypeEnum(true, DependType.ARRAY));
+            put("models", new DependTypeEnum(true, DependType.ARRAY));
+            put("stores", new DependTypeEnum(true, DependType.ARRAY));
+            put("views", new DependTypeEnum(true, DependType.ARRAY));
 
-            put("extend", new DependTypeEnum(false, "string"));
-            put("model", new DependTypeEnum(false, "string"));
-            put("store", new DependTypeEnum(false, "string"));
+            put("extend", new DependTypeEnum(false, DependType.STRING));
+            put("model", new DependTypeEnum(false, DependType.STRING));
+            put("store", new DependTypeEnum(false, DependType.STRING));
         }
     };
 

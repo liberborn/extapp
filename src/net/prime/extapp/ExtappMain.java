@@ -198,6 +198,7 @@ public class ExtappMain {
         // Default settings
         Boolean verbose = false;
         Boolean delimiter = false;
+        @SuppressWarnings("unused")
         Boolean minify = false;
         String basePath = "";
         String configFilename = null;

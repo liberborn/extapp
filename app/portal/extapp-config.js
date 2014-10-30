@@ -23,6 +23,7 @@
         // array types without folders
         requires : true,
         uses : true,
+        mixins : true,
         includes : true, // custom type (not documented in ExtJS)
 
         // array types with folders

@@ -463,7 +463,10 @@ Ext.define('Demo.view.portal.NavigationHeader', {
     alias: 'widget.navigationheader',
 
     requires: [
-        'DemoSingleton',
+        'DemoSingleton'
+    ],
+    
+    mixins: [
         'Demo.view.components.Logo'
     ]
 });
