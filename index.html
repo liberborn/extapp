@@ -2,9 +2,9 @@
 <html>
 
   <head>
-    <meta charset='utf-8' />
-    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
-    <meta name="description" content="Extapp : Extapp is the tool to build ExtJS applications. Ranking dependencies and combining all ExtJS classes into one output file." />
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="description" content="Extapp : Extapp is the tool to build ExtJS applications. Ranking dependencies and combining all ExtJS classes into one output file.">
 
     <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
 
@@ -48,9 +48,10 @@
 <li>deduplicate referenced dependencies</li>
 <li>ranking classes based on references</li>
 <li>smart avoid of infinite loops</li>
-<li>minify JS code</li>
 <li>usage in other JS frameworks</li>
-</ul><h1>
+</ul>
+
+<h1>
 <a name="usage" class="anchor" href="#usage"><span class="octicon octicon-link"></span></a>Usage</h1>
 
 <div class="highlight highlight-bash"><pre>Usage: java -jar extapp-yyyy.mm.jar <span class="o">[</span>options<span class="o">]</span> <span class="o">[</span>base path<span class="o">]</span> <span class="o">[</span>config file<span class="o">]</span> <span class="o">[</span><span class="nb">source </span>file<span class="o">]</span> <span class="o">[</span>output file<span class="o">]</span>
@@ -59,7 +60,6 @@ Global Options
   -h, --help                    Displays this information
   -v, --verbose                 Display informational messages and warnings
   -l, --delimiter               Output a delimiter between combined files
-  -m, --minify                  Minify js code in the output file
   -b, --basePath                Base path to web folder <span class="o">(</span>absolute or relative<span class="o">)</span>
   -c &lt;file&gt;, --config &lt;file&gt;    Config file with extapp options
   -s &lt;file&gt;, --source &lt;file&gt;    Source file. Starting point to process dependencies.
@@ -88,8 +88,10 @@ Global Options
 <strong>array types with folders</strong>: 'controllers', 'models', 'stores', 'views'</li>
 <li>
 <strong>string types</strong>: 'extend', 'model', 'store'</li>
-</ul><h2>
-<a name="rankink-classes" class="anchor" href="#rankink-classes"><span class="octicon octicon-link"></span></a>Rankink classes</h2>
+</ul>
+
+<h2>
+<a name="ranking-classes" class="anchor" href="#ranking-classes"><span class="octicon octicon-link"></span></a>Ranking classes</h2>
 
 <p>The simpliest way to prioritize classes is to rank them based on references. </p>
 
@@ -107,9 +109,7 @@ Global Options
 <h2>
 <a name="minify-js-code" class="anchor" href="#minify-js-code"><span class="octicon octicon-link"></span></a>Minify JS Code</h2>
 
-<p>Simple JS Code minify option. Removes comments, line breaks and white spaces. I would recommend to use <strong><a href="https://github.com/yui/yuicompressor">YUI Compressor</a></strong> instead.</p>
-
-<p>But in rare cases when code is not working you can keep in mind that <strong>YUI Compressor</strong> is modyfiying code a little bit (changes local variables in fuctions etc). So the simple minify option would be better to use sometimes.</p>
+<p>I recommend to use <strong><a href="https://github.com/yui/yuicompressor">YUI Compressor</a></strong>.</p>
 
 <h2>
 <a name="extapp-vs-senchacmd" class="anchor" href="#extapp-vs-senchacmd"><span class="octicon octicon-link"></span></a>Extapp VS Sencha.cmd</h2>
@@ -122,7 +122,9 @@ Global Options
 <li>excluding native <strong>'Ext'</strong> sources</li>
 <li>working in non-conflict way</li>
 <li>deployment friendly</li>
-</ul><h3>
+</ul>
+
+<h3>
 <a name="excluding-native-ext-sources" class="anchor" href="#excluding-native-ext-sources"><span class="octicon octicon-link"></span></a>Excluding native <strong>'Ext'</strong> sources</h3>
 
 <p>The big ExtJS appications usually use many of core ExtJS sources. That is why it is useful just to include 'ext-all.js' and do not care about native <strong>'Ext'</strong> classes. Extapp does the job. You may exclude <strong>'Ext'</strong> class but include <strong>'Ext.data'</strong> etc.</p>
@@ -150,7 +152,7 @@ Global Options
 <h3>
 <a name="run-in-command-line" class="anchor" href="#run-in-command-line"><span class="octicon octicon-link"></span></a>Run in command line</h3>
 
-<div class="highlight highlight-bash"><pre>java -jar .build/extapp-2014.06.jar -v -l -b app -c /portal/extapp-config.js -s /portal/app.js -o /portal/app-output.js
+<div class="highlight highlight-bash"><pre>java -jar .build/extapp-2014.10.jar -v -l -b app -c /portal/extapp-config.js -s /portal/app.js -o /portal/app-output.js
 </pre></div>
 
 <h3>
@@ -216,7 +218,7 @@ Global Options
 <h3>
 <a name="command-line-output" class="anchor" href="#command-line-output"><span class="octicon octicon-link"></span></a>Command line output</h3>
 
-<div class="highlight highlight-bash"><pre><span class="nv">$ </span>java -jar .build/extapp-2014.06.jar -v -l -b app -c /portal/extapp-config.js -s /portal/app.js -o /portal/app-output.js
+<div class="highlight highlight-bash"><pre><span class="nv">$ </span>java -jar .build/extapp-2014.10.jar -v -l -b app -c /portal/extapp-config.js -s /portal/app.js -o /portal/app-output.js
 
 <span class="o">[</span>INFO<span class="o">]</span> Base path : app
 <span class="o">[</span>INFO<span class="o">]</span> Config file : app/portal/extapp-config.js
@@ -271,7 +273,7 @@ Ext class <span class="s1">'Demo.modules.test.view.TestView'</span>. File : /por
 <h3>
 <a name="run-in-command-line-1" class="anchor" href="#run-in-command-line-1"><span class="octicon octicon-link"></span></a>Run in command line</h3>
 
-<div class="highlight highlight-bash"><pre>java -jar .build/extapp-2014.06.jar -v -l -b app -c /calendar/extapp-config.js -s /calendar/src/App.js
+<div class="highlight highlight-bash"><pre>java -jar .build/extapp-2014.10.jar -v -l -b app -c /calendar/extapp-config.js -s /calendar/src/App.js
 </pre></div>
 
 <h3>
@@ -333,7 +335,7 @@ Ext class <span class="s1">'Demo.modules.test.view.TestView'</span>. File : /por
 <h3>
 <a name="command-line-output-1" class="anchor" href="#command-line-output-1"><span class="octicon octicon-link"></span></a>Command line output</h3>
 
-<div class="highlight highlight-bash"><pre><span class="nv">$ </span>java -jar .build/extapp-2014.06.jar -v -l -b app -c /calendar/extapp-config.js -s /calendar/src/App.js
+<div class="highlight highlight-bash"><pre><span class="nv">$ </span>java -jar .build/extapp-2014.10.jar -v -l -b app -c /calendar/extapp-config.js -s /calendar/src/App.js
 
 <span class="o">[</span>INFO<span class="o">]</span> Base path : app
 <span class="o">[</span>INFO<span class="o">]</span> Config file : app/calendar/extapp-config.js
@@ -405,7 +407,7 @@ Ext class <span class="s1">'Demo.modules.test.view.TestView'</span>. File : /por
   <span class="c">&lt;!-- define props --&gt;</span>
   <span class="nt">&lt;taskdef</span> <span class="na">resource=</span><span class="s">"net/sf/antcontrib/antcontrib.properties"</span> <span class="nt">/&gt;</span>
 
-  <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"extappJar"</span> <span class="na">value=</span><span class="s">".build/extapp-2014.06.jar"</span> <span class="nt">/&gt;</span>
+  <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"extappJar"</span> <span class="na">value=</span><span class="s">".build/extapp-2014.10.jar"</span> <span class="nt">/&gt;</span>
   <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"projectBasePath"</span> <span class="na">value=</span><span class="s">"app"</span> <span class="nt">/&gt;</span>
 
   <span class="c">&lt;!-- Extapp Builder --&gt;</span>
@@ -454,7 +456,7 @@ Ext class <span class="s1">'Demo.modules.test.view.TestView'</span>. File : /por
 <h2>
 <a name="gradle-tasks" class="anchor" href="#gradle-tasks"><span class="octicon octicon-link"></span></a>Gradle tasks</h2>
 
-<div class="highlight highlight-groovy"><pre><span class="kt">def</span> <span class="n">extappJar</span> <span class="o">=</span> <span class="s1">'.build/extapp-2014.06.jar'</span>
+<div class="highlight highlight-groovy"><pre><span class="kt">def</span> <span class="n">extappJar</span> <span class="o">=</span> <span class="s1">'.build/extapp-2014.10.jar'</span>
 
 <span class="cm">/**</span>
 <span class="cm"> * Extapp Builder</span>
