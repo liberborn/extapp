@@ -13,7 +13,6 @@ No additional comment conventions needed. Extapp avoids some custom magic commen
 - deduplicate referenced dependencies
 - ranking classes based on references
 - smart avoid of infinite loops
-- minify JS code
 - usage in other JS frameworks
 
 
@@ -26,7 +25,6 @@ Global Options
   -h, --help                    Displays this information
   -v, --verbose                 Display informational messages and warnings
   -l, --delimiter               Output a delimiter between combined files
-  -m, --minify                  Minify js code in the output file
   -b, --basePath                Base path to web folder (absolute or relative)
   -c <file>, --config <file>    Config file with extapp options
   -s <file>, --source <file>    Source file. Starting point to process dependencies.
@@ -64,9 +62,7 @@ It was resolved with easy trick - *rank limit* introduced. Usually the very huge
 
 ## Minify JS Code
 
-Simple JS Code minify option. Removes comments, line breaks and white spaces. I would recommend to use **[YUI Compressor](https://github.com/yui/yuicompressor)** instead.
-
-But in rare cases when code is not working you can keep in mind that **YUI Compressor** is modyfiying code a little bit (changes local variables in fuctions etc). So the simple minify option would be better to use sometimes.
+I recommend to use **[YUI Compressor](https://github.com/yui/yuicompressor)**.
 
 ## Extapp VS Sencha.cmd
 
@@ -99,7 +95,7 @@ Extapp may be easily integrated in both **ant** and **gradle** deployment script
 
 ### Run in command line
 ```bash
-java -jar .build/extapp-2014.06.jar -v -l -b app -c /portal/extapp-config.js -s /portal/app.js -o /portal/app-output.js
+java -jar .build/extapp-2014.10.jar -v -l -b app -c /portal/extapp-config.js -s /portal/app.js -o /portal/app-output.js
 ```
 
 ### Extapp config file
@@ -163,7 +159,7 @@ java -jar .build/extapp-2014.06.jar -v -l -b app -c /portal/extapp-config.js -s 
 
 ### Command line output
 ```bash
-$ java -jar .build/extapp-2014.06.jar -v -l -b app -c /portal/extapp-config.js -s /portal/app.js -o /portal/app-output.js
+$ java -jar .build/extapp-2014.10.jar -v -l -b app -c /portal/extapp-config.js -s /portal/app.js -o /portal/app-output.js
 
 [INFO] Base path : app
 [INFO] Config file : app/portal/extapp-config.js
@@ -216,7 +212,7 @@ Ext class 'Demo.modules.test.view.TestView'. File : /portal/modules/test/view/Te
 
 ### Run in command line
 ```bash
-java -jar .build/extapp-2014.06.jar -v -l -b app -c /calendar/extapp-config.js -s /calendar/src/App.js
+java -jar .build/extapp-2014.10.jar -v -l -b app -c /calendar/extapp-config.js -s /calendar/src/App.js
 ```
 
 ### Extapp config file
@@ -276,7 +272,7 @@ java -jar .build/extapp-2014.06.jar -v -l -b app -c /calendar/extapp-config.js -
 
 ### Command line output
 ```bash
-$ java -jar .build/extapp-2014.06.jar -v -l -b app -c /calendar/extapp-config.js -s /calendar/src/App.js
+$ java -jar .build/extapp-2014.10.jar -v -l -b app -c /calendar/extapp-config.js -s /calendar/src/App.js
 
 [INFO] Base path : app
 [INFO] Config file : app/calendar/extapp-config.js
@@ -346,7 +342,7 @@ $ java -jar .build/extapp-2014.06.jar -v -l -b app -c /calendar/extapp-config.js
   <!-- define props -->
   <taskdef resource="net/sf/antcontrib/antcontrib.properties" />
 
-  <property name="extappJar" value=".build/extapp-2014.06.jar" />
+  <property name="extappJar" value=".build/extapp-2014.10.jar" />
   <property name="projectBasePath" value="app" />
 
   <!-- Extapp Builder -->
@@ -395,7 +391,7 @@ $ java -jar .build/extapp-2014.06.jar -v -l -b app -c /calendar/extapp-config.js
 
 ## Gradle tasks
 ```groovy
-def extappJar = '.build/extapp-2014.06.jar'
+def extappJar = '.build/extapp-2014.10.jar'
 
 /**
  * Extapp Builder
