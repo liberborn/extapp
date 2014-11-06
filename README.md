@@ -125,6 +125,7 @@ java -jar .build/extapp-2014.10.jar -v -l -b app -c /portal/extapp-config.js -s 
         // array types without folders
         requires : true,
         uses : true,
+        mixins : true,
         includes : true, // custom type (not documented in ExtJS)
 
         // array types with folders
@@ -238,6 +239,7 @@ java -jar .build/extapp-2014.10.jar -v -l -b app -c /calendar/extapp-config.js -
         // array types without folders
         requires : true,
         uses : true,
+        mixins : true,
         includes : false, // custom type (not documented in ExtJS)
 
         // array types with folders
