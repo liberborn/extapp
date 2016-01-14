@@ -504,3 +504,6 @@ Framework.defineFunction({'Framework.classTwo.SubClass', {
 Inspired by _Nicholas's C. Zakas_ Combiner tool
 - http://www.nczonline.net/blog/2009/09/22/introducing-combiner-a-javascriptcss-concatenation-tool/
 - https://github.com/nzakas/combiner
+
+
+[![Analytics](https://ga-beacon.appspot.com/UA-72406354-1/your-repo/page-name)](https://github.com/igrigorik/ga-beacon)
